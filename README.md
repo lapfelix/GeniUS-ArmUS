@@ -1,4 +1,6 @@
 GeniUS-ArmUS
 ============
 
-Bonjour, ceci est la description test test test
+PROJET 1 - Code Armus pour Robus
+Réalisé par l'équipe P24 - GeniUS
+
