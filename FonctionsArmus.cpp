@@ -39,7 +39,7 @@ void setVitesse(robot &unRobot,int &i,const short int TRANSITIONS)
 							 unRobot.encodeurDroit - unRobot.encodeurGauche;
 
 
-	//Formules d'ajustement des moteurs.
+	//Formules d'ajustement des moteurs
     unRobot.vitesseDroit+= (int)0.108 * valeurCompteurD + valeurErreurD * 0.27 + correcteurDroit *0.5 ;
     unRobot.vitesseGauche+= (int)0.108 * valeurCompteurG + valeurErreurG * 0.27 + correcteurGauche*0.5;
 }
