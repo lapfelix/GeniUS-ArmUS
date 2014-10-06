@@ -105,59 +105,75 @@ void parcours(robot &unRobot,int &i,const short int TRANSITIONS)
 */
 }
 
-
 void cmToRevolution(int distanceCm,robot &unRobot,int &i,const short int TRANSITIONS)
 {
+
+	unRobot.vitesseGauche =80;
+	unRobot.vitesseDroit = 78;
 
 	int transitions = distanceCm * 2.65; // cm * 64/(7.7*pi)
 
 
-	while((unRobot.currentDistanceGauche)<=transitions)
+	while((unRobot.totalDistanceGauche+unRobot.totalDistanceDroit)/2<=transitions)
 	{
 		setVitesse(unRobot,i,TRANSITIONS);
 	}
 
 
 	//Affichage
-	LCD_Printf("Cible: %i Moyenne : %i\n",transitions,(unRobot.currentDistanceGauche+unRobot.totalDistanceDroit / 2));
-
-	LCD_Printf("Gauche: %i Droit: %i\n",unRobot.currentDistanceGauche,unRobot.totalDistanceDroit);
+	//LCD_Printf("Cible: %i Moyenne : %i\n",transitions,(unRobot.totalDistanceGauche+unRobot.totalDistanceDroit / 2));
+	//LCD_Printf("Gauche: %i Droit: %i\n",unRobot.totalDistanceGauche,unRobot.totalDistanceDroit);
 
 
 	MOTOR_SetSpeed(MOTOR_RIGHT, 0);
     MOTOR_SetSpeed(MOTOR_LEFT, 0);
 
-	unRobot.currentDistanceGauche = 0;
-	unRobot.currentDistanceDroit = 0;
+	unRobot.totalDistanceGauche = 0;
+	unRobot.totalDistanceDroit = 0;
+	i=0;
 }
 
 void setAngle(int angle,robot &unRobot,int &i,const short int TRANSITIONS)
 {
-	int transitions = angle * 22 / 90;
+	THREAD_MSleep(500);
+	int transitions =  (angle * 22 / 90) * 2.65 - 15;
+	LCD_Printf("FUCKKK , %i", transitions);
 	if(angle<0)
 	{
 		//Avancer la roue droite
 		unRobot.vitesseGauche =0;
-		unRobot.vitesseDroit = 78;
+		unRobot.vitesseDroit = 30;
 
+		do
+		{
+
+			setVitesse(unRobot,i,TRANSITIONS);
+		}
+		while((unRobot.totalDistanceDroit)<= 0 - transitions);
+		LCD_Printf("\nAAhhh , %i", unRobot.totalDistanceDroit);
 	}
 	else
 	{
 		//Avancer la roue gauche
-		unRobot.vitesseGauche =80;
+		unRobot.vitesseGauche =52;
 		unRobot.vitesseDroit = 0;
+
+		do
+		{
+			LCD_Printf("RRRRRRRRRRRRRHHHH");
+			setVitesse(unRobot,i,TRANSITIONS);
+		}
+		while((unRobot.totalDistanceGauche)<=transitions);
+
 	}
 
-	while((unRobot.currentDistanceGauche + unRobot.currentDistanceDroit)<=transitions)
-	{
+	MOTOR_SetSpeed(MOTOR_RIGHT, 0);
+    MOTOR_SetSpeed(MOTOR_LEFT, 0);
 
-		setVitesse(unRobot,i,TRANSITIONS);
-	}
-
-	unRobot.currentDistanceGauche = 0;
-	unRobot.currentDistanceDroit = 0;
+	unRobot.totalDistanceGauche = 0;
+	unRobot.totalDistanceDroit = 0;
+	i=0;
 }
-
 
 
 //Retourne la distance parcourue en cm
