@@ -11,7 +11,7 @@
 int main()
 {
 	const short int TRANSITIONS = 16;
-	const short int MODE = 1; // TEST:0 DEV:1
+	const short int MODE = 2; // TEST:0 PARCOURS:1 PID:2 
 
 	int i = 1; //nb de cycle**
 
@@ -23,6 +23,14 @@ int main()
 	unRobot.totalDistanceDroit = 0;
 	unRobot.totalDistanceGauche = 0;
 
+	//variables à Pier-Luc bam d'un coup
+	unRobot.distanceVoulue = 0; // distance supposément parcourue par le robot;
+	unRobot.lecturevitesseDroite = 0;
+	unRobot.lecturevitesseGauche = 0;
+	unRobot.vitesseMoteurDroit = 0;
+	unRobot.vitesseMoteurGauche = 0;
+	unRobot.distanceMoteurDroit=0;
+	unRobot.distanceMoteurGauche=0;
 
 	int init;
 	//Pour initialiser les compteurs avant le début, évite quelques bogues intermittants.
@@ -42,6 +50,13 @@ int main()
     	else if(MODE == 1)
     	{
     	    parcours(unRobot,i,TRANSITIONS);
+    	}else if(MODE == 2)
+    	{
+    		int consigneVitesse = 10;//transitions / valeur de temps
+    		
+    	    while(1){
+    	    		setVitesse(unRobot,i,consigneVitesse);
+    	    }
     	}
 
 

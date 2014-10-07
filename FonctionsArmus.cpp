@@ -10,14 +10,14 @@
 
 const int VITESSE_INITIALE_7 = 80;
 const int VITESSE_INITIALE_8 = 78;
+const int TEMPS = 100;//msecondes
 
-void setVitesse(robot &unRobot,int &i,const short int TRANSITIONS)
+const float FC_VITESSE = 1;//facteur de correction de la vitesse
+const float FC_DISTANCE = 0.5;//facteur de correction de la distance
+
+
+void setVitesse(robot &unRobot,int &i,const short int consigneVitesse)
 {
-
-
-	MOTOR_SetSpeed(MOTOR_RIGHT, unRobot.vitesseDroit);
-    MOTOR_SetSpeed(MOTOR_LEFT, unRobot.vitesseGauche);
-	THREAD_MSleep(250);
 
 	//Distance parcourue en nombre de transitions effectuees
 	unRobot.encodeurDroit = ENCODER_Read(ENCODER_RIGHT);
@@ -26,24 +26,24 @@ void setVitesse(robot &unRobot,int &i,const short int TRANSITIONS)
     unRobot.totalDistanceGauche += unRobot.encodeurGauche;
 
 
-	//Correction de la vitesse
-	int valeurCompteurD = (i * TRANSITIONS) - unRobot.totalDistanceDroit;
-    int valeurCompteurG = (i * TRANSITIONS) - unRobot.totalDistanceGauche;
-    int valeurErreurD = TRANSITIONS - unRobot.encodeurDroit;
-    int valeurErreurG = TRANSITIONS - unRobot.encodeurGauche;
+	THREAD_MSleep(TEMPS);
 
-	//correction entre entre les 2 encodeurs
-	int correcteurDroit = (unRobot.encodeurDroit - unRobot.encodeurGauche) > 0 ? 0 :
-						   unRobot.encodeurGauche - unRobot.encodeurDroit;
+	unRobot.lecturevitesseDroite = ENCODER_Read(ENCODER_RIGHT);
+	unRobot.lecturevitesseGauche = ENCODER_Read(ENCODER_LEFT);
+	unRobot.distanceVoulue = unRobot.distanceVoulue+unRobot.consigneVitesse;
+	unRobot.distanceMoteurDroit = unRobot.distanceMoteurDroit+unRobot.lecturevitesseDroite;
+	unRobot.distanceMoteurGauche = unRobot.distanceMoteurGauche + unRobot.lecturevitesseGauche;
 
 
-	int correcteurGauche = (unRobot.encodeurGauche - unRobot.encodeurDroit) > 0 ? 0 :
-							 unRobot.encodeurDroit - unRobot.encodeurGauche;
+	unRobot.vitesseMoteurDroit = -FC_VITESSE*(unRobot.lecturevitesseDroite-unRobot.consigneVitesse)-FC_DISTANCE*(unRobot.distanceMoteurDroit-unRobot.distanceVoulue);
+	unRobot.vitesseMoteurGauche = -FC_VITESSE*(unRobot.lecturevitesseGauche-unRobot.consigneVitesse)-FC_DISTANCE*(unRobot.distanceMoteurGauche-unRobot.distanceVoulue);
+	LCD_Printf(",EG %d, ED %d\n ", unRobot.lecturevitesseGauche-unRobot.consigneVitesse, unRobot.lecturevitesseDroite-unRobot.consigneVitesse);
 
-	//Formules d'ajustement des moteurs
-	unRobot.vitesseGauche =  (int)(VITESSE_INITIALE_7 + 0.108 * valeurCompteurG + valeurErreurG * 0.7);
-	unRobot.vitesseDroit =  (int)(0.5 + VITESSE_INITIALE_8+  0.108 * valeurCompteurD + valeurErreurD * 0.7);
-	++i;
+
+
+	MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
+	MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
+
 }
 
 

@@ -7,7 +7,7 @@
 
 struct robot
 {
-    int vitesseDroit;
+    	int vitesseDroit;
 		int vitesseGauche;
 		short int encodeurDroit;
 		short int encodeurGauche;
@@ -17,6 +17,14 @@ struct robot
 		int totalDistanceGauche;
 		int currentDistanceDroit;
 		int currentDistanceGauche;
+
+		int distanceVoulue; // distance supposément parcourue par le robot;
+		short int lecturevitesseDroite;
+		short int lecturevitesseGauche;
+		int vitesseMoteurDroit;
+		int vitesseMoteurGauche;
+		int distanceMoteurDroit;
+		int distanceMoteurGauche;
 };
 void setVitesse(robot&,int&,const short int);
 int distance();
