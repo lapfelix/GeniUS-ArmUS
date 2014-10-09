@@ -4,11 +4,6 @@
  * Creation : 01/10/2014
  * Modifie  : 08/10/2014
  */
-<<<<<<< HEAD
-
-=======
- 
->>>>>>> FETCH_HEAD
 #include <iostream>
 #include <libarmus.h>
 #include <cmath>
@@ -19,7 +14,7 @@ int main()
 	const short int TRANSITIONS = 10;
 	short int MODE=1; //0: TEST   1:	DEV
 
-	//rentre en mode test si le bumper front est enfoncé lorsqu'on pèse sur user
+	//rentre en mode test si le bumper front est enfoncÃ© lorsqu'on pÃ¨se sur user
 	if(DIGITALIO_Read(BMP_FRONT) == 1)
 		MODE=0;
 
