@@ -11,10 +11,20 @@
 
 void parcoursTest(robot &unRobot, short int TRANSITIONS)
 {
+	/*
 	reinitialiser(unRobot);
 	encodeurDroitTest();
 	reinitialiser(unRobot);
 	encodeurGaucheTest();
+	*/
+
+	//boucle permettant de garder le programme en execution pour etre capable d'arreter son execution en pesant le bouton 'user'
+	while(1)
+	{
+		MOTOR_SetSpeed(MOTOR_RIGHT, 40);
+		MOTOR_SetSpeed(MOTOR_LEFT, 40);
+		THREAD_MSleep(1000);
+	}
 	//vitesseTEST(unRobot,TRANSITIONS);
 }
 
