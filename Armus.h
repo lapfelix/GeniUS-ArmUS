@@ -1,7 +1,7 @@
 /*
- * Programme Armus - Ã‰quipe P24
- * CrÃ©ation : 01/10/2014
- * ModifiÃ©  : 02/10/2014
+ * Programme Armus - Équipe P24
+ * Création : 01/10/2014
+ * Modifié  : 02/10/2014
  */
 
 
@@ -19,7 +19,7 @@ struct robot
 		int currentDistanceGauche;
 
 		int distanceVoulueGauche;
-		int distanceVoulueDroite; // distance supposÃ©ment parcourue par le robot;
+		int distanceVoulueDroite; // distance supposément parcourue par le robot;
 		short int lecturevitesseDroite;
 		short int lecturevitesseGauche;
 		int vitesseMoteurDroit;
@@ -28,9 +28,14 @@ struct robot
 		int distanceMoteurGauche;
 };
 int distance();
-void setVitesse(robot&,short int,short int);
-void cmToRevolution(int,robot&,short int,short int);
+void vitesse(robot&,short int,short int);
+void avancer(int,robot&,short int,short int);
 void parcours(robot&,short int);
-void setAngle(int,robot&,int&,const short int);
-void resetValues(robot&);
-void turn(int, robot&, bool);
+void reinitialiser(robot&);
+void tourner(int, robot&, bool);
+
+//TEST
+void vitesseTEST(robot&,const short int);
+void parcoursTest(robot&, short int);
+void encodeurGaucheTest();
+void encodeurDroitTest();
