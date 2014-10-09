@@ -4,7 +4,11 @@
  * Creation : 01/10/2014
  * Modifie  : 08/10/2014
  */
+<<<<<<< HEAD
 
+=======
+ 
+>>>>>>> FETCH_HEAD
 #include <iostream>
 #include <libarmus.h>
 #include <cmath>
