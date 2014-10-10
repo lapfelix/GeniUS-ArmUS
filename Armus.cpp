@@ -1,4 +1,3 @@
-
 /*
  * Programme Armus - Equipe P24
  * Creation : 01/10/2014

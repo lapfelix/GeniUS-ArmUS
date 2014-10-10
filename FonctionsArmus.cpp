@@ -28,8 +28,14 @@ void vitesse(robot &unRobot,short int transitionsGauche,short int transitionsDro
 	int correctionDroit = 0;
 
 	unRobot.vitesseMoteurDroit = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseDroite-transitionsDroite)-FC_DISTANCE*(float)(unRobot.distanceMoteurDroit-unRobot.distanceVoulueDroite));
-	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
-//	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
+	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche-1.7)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
+
+	if(unRobot.vitesseMoteurDroit == 0 && unRobot.vitesseMoteurGauche == 0)
+	{
+		unRobot.vitesseMoteurDroit = 30;
+		unRobot.vitesseMoteurGauche = 30;
+	}
+	//	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
 
 	MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
 	MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
@@ -40,15 +46,15 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 		//1ere partie, avancer de 222.5cm
 		reinitialiser(unRobot);
-		avancer(242.5,unRobot,TRANSITIONS,TRANSITIONS); //(200 + 45/2)cm
+		avancer(237,unRobot,TRANSITIONS,TRANSITIONS); //(200 + 45/2)cm
 
 		//2e partie, tourner de -90degrees
 		reinitialiser(unRobot);
-		tourner(90, unRobot, false);
+		tourner(100, unRobot, false);
 
 		//3e partie, avancer de 47.5cm
 		reinitialiser(unRobot);
-		avancer(30.5,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
+		avancer(25,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
 
 		//4e partie, tourner de 90degrees
 		reinitialiser(unRobot);
@@ -56,15 +62,15 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 		//5e partie, avancer de 47.5cm
 		reinitialiser(unRobot);
-		avancer(30,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
+		avancer(14,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
 
 		//6e partie, tourner de 90degrees
 		reinitialiser(unRobot);
-		tourner(90, unRobot, true);
+		tourner(95, unRobot, true);
 
 		//7e partie, avancer de 47.5cm
 		reinitialiser(unRobot);
-		avancer(47.5,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
+		avancer(33,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
 
 		//8e partie, tourner de -90degrees
 		reinitialiser(unRobot);
@@ -84,7 +90,7 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 		//12e partie, tourner de -90degrees
 		reinitialiser(unRobot);
-		tourner(87, unRobot, false);
+		tourner(90, unRobot, false);
 
 		//13e partie, avancer de 82.5cm
 		reinitialiser(unRobot);
@@ -100,7 +106,7 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 		//15e partie, tourner 5 degres a droite
 		reinitialiser(unRobot);
-		tourner(15, unRobot, true); //(60 + 45/2)cm
+		tourner(22, unRobot, true); //(60 + 45/2)cm
 
 		//last sprint!
 		reinitialiser(unRobot);
@@ -149,7 +155,7 @@ void avancer(int distanceCm,robot &unRobot,short int transitionGauche, short int
 		//}
 		//else
 		//{
-			vitesse(unRobot,10,10);
+			vitesse(unRobot,15,15);
 		//}
 	}
 	LCD_Printf("STOP \n");
@@ -169,10 +175,10 @@ void tourner(int angle, robot &unRobot, bool tourneGauche){
 		while(unRobot.distanceMoteurGauche <= (int)((angle - 15)/tourCompletCm))
 		{
 			unRobot.distanceMoteurGauche += ENCODER_Read(ENCODER_LEFT);
-			MOTOR_SetSpeed(MOTOR_LEFT,35);
-			MOTOR_SetSpeed(MOTOR_RIGHT,0);
+			//MOTOR_SetSpeed(MOTOR_LEFT,35);
+			//MOTOR_SetSpeed(MOTOR_RIGHT,0);
 			//LCD_Printf("lol %i vs %f\n",(int)((tourCompletCm *((float)angle/360.f)*2.9)),((tourCompletCm *((float)angle/360.f)*2.9)));
-			//vitesse(unRobot,5,0);
+			vitesse(unRobot,10,0);
 		}
 	}
 	else
@@ -181,8 +187,9 @@ void tourner(int angle, robot &unRobot, bool tourneGauche){
 				while(unRobot.distanceMoteurDroit <= (int)((angle - 15)/tourCompletCm))
 				{
 					unRobot.distanceMoteurDroit += ENCODER_Read(ENCODER_RIGHT);
-					MOTOR_SetSpeed(MOTOR_LEFT,0);
-					MOTOR_SetSpeed(MOTOR_RIGHT,35);
+					//MOTOR_SetSpeed(MOTOR_LEFT,0);
+					//MOTOR_SetSpeed(MOTOR_RIGHT,35);
+					vitesse(unRobot,0,10);
 		}
 	}
 }

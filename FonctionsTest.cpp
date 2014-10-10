@@ -68,6 +68,3 @@ void encodeurGaucheTest()
 	}
 	MOTOR_SetSpeed(7,0);
 }
-
-
-
