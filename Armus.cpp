@@ -7,9 +7,10 @@
 #include <iostream>
 #include <libarmus.h>
 #include <cmath>
+#include "CapteurCouleur.h"
 #include "Armus.h"
 
-int main2()
+int main()
 {
 	const short int TRANSITIONS = 10;
 	short int MODE=1; //0: TEST   1:	DEV
@@ -18,6 +19,10 @@ int main2()
 	if(DIGITALIO_Read(BMP_FRONT) == 1)
 		MODE=0;
 
+	//rentre en mode test couleur si le bumper front est enfoncé lorsqu'on pèse sur user
+	if(DIGITALIO_Read(BMP_LEFT) == 1)
+			MODE=2;
+
 	robot unRobot;
 	reinitialiser(unRobot);
     LCD_ClearAndPrint("New 1\n");
@@ -25,6 +30,7 @@ int main2()
     {
     	case 0 : parcoursTest(unRobot,TRANSITIONS);break;
     	case 1 : parcours(unRobot,TRANSITIONS);break;
+    	case 2 : testCouleur();break;
     }
 
     return 0;

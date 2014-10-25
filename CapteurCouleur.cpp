@@ -1,11 +1,7 @@
-/*
- * CapteurCouleur.cpp
- *
- *  Created on: 2014-10-23
- *      Author: Eric Matte
- */
-
 #include <libarmus.h>
+#include <stdint.h>
+
+#include "CapteurCouleur.cpp"
 
 #define ADJD_S371_QR999_SADR 	0x74
 #define CAP_RED					0x6
@@ -190,12 +186,12 @@ void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& 
 int color_Init(int& dev_handle)
 {
 	int error;
-	error = armus::i2c_RegisterDevice(ADJD_S371_QR999_SADR, 100000, 1000, dev_handle);
+	error = armus::i2c_RegisterDevice(ADJD_S371_QR999_SADR,  100000, 1000, dev_handle);
 
 	return error;
 }
 
-int main()
+int testCouleur()
 {
 	int red, blue, green, clear;
 
@@ -219,11 +215,6 @@ int main()
 		THREAD_MSleep(1000);
 	}
 
-
-
 	return 0;
 }
-
-
-
 
