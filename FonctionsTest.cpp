@@ -36,7 +36,7 @@ void vitesseTEST(robot &unRobot,short int TRANSITIONS)
     MOTOR_SetSpeed(MOTOR_LEFT, 50);
 	THREAD_MSleep(500);
 
-	//Distance parcourue en nombre de transitions effectués
+	//Distance parcourue en nombre de transitions effectuÃ©s
 	unRobot.encodeurDroit = ENCODER_Read(ENCODER_RIGHT);
     unRobot.encodeurGauche = ENCODER_Read(ENCODER_LEFT);
 	//Affichage des encodeurs et des vitesses
@@ -68,3 +68,6 @@ void encodeurGaucheTest()
 	}
 	MOTOR_SetSpeed(7,0);
 }
+
+
+
