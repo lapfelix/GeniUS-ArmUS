@@ -1,7 +1,7 @@
 /*
- *  * Programme Armus - �quipe P24
- * Cr�ation : 01/10/2014
- * Modifi�  : 02/10/2014
+ *  * Programme Armus - Équipe P24
+ * Création : 01/10/2014
+ * Modifié  : 02/10/2014
  */
 
 #include <iostream>
@@ -9,9 +9,15 @@
 #include <libarmus.h>
 #include "Armus.h"
 
+
 const int TEMPS = 250;//msecondes
 const float FC_VITESSE = 1;//facteur de correction de la vitesse
 const float FC_DISTANCE = 0.5;//facteur de correction de la distance
+bool depart14 = false;
+bool depart43 = false;
+bool arret = false;
+void detectionFrequence();
+
 
 void vitesse(robot &unRobot,short int transitionsGauche,short int transitionsDroite)
 {
@@ -37,101 +43,24 @@ void vitesse(robot &unRobot,short int transitionsGauche,short int transitionsDro
 
 void parcours(robot &unRobot, short int TRANSITIONS)
 {
+	//Variables
+	bool estROBOT43; //ROBOT_43 part en premier!!
+	bool premierSonEffectuer = false;
 
-		//1ere partie, avancer de 222.5cm
-		reinitialiser(unRobot);
-		avancer(242.5,unRobot,TRANSITIONS,TRANSITIONS); //(200 + 45/2)cm
 
-		//2e partie, tourner de -90degrees
-		reinitialiser(unRobot);
-		tourner(90, unRobot, false);
+	THREAD thread_frequence;
+	thread_frequence = THREAD_CreateSimple(detectionFrequence);
+	LCD_Printf("start program\n");
+	while (arret!=true)
+	{
+		if (depart14==true)
+			LCD_Printf("depart14\n");
+		if (depart43==true)
+			LCD_Printf("depart43\n");
+	}
+LCD_ClearAndPrint("FINI");
 
-		//3e partie, avancer de 47.5cm
-		reinitialiser(unRobot);
-		avancer(30.5,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
-
-		//4e partie, tourner de 90degrees
-		reinitialiser(unRobot);
-		tourner(90, unRobot, true);
-
-		//5e partie, avancer de 47.5cm
-		reinitialiser(unRobot);
-		avancer(30,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
-
-		//6e partie, tourner de 90degrees
-		reinitialiser(unRobot);
-		tourner(90, unRobot, true);
-
-		//7e partie, avancer de 47.5cm
-		reinitialiser(unRobot);
-		avancer(47.5,unRobot,TRANSITIONS,TRANSITIONS); //(50/2 + 45/2)cm
-
-		//8e partie, tourner de -90degrees
-		reinitialiser(unRobot);
-		tourner(83, unRobot, false);
-
-		//9e partie, avancer de 18cm
-		reinitialiser(unRobot);
-		avancer(18,unRobot,TRANSITIONS,TRANSITIONS);
-
-		//10e partie, tourner de 45degrees
-		reinitialiser(unRobot);
-		tourner(45, unRobot, true); //(180-135)degrees
-
-		//11e partie, avancer de 30cm
-		reinitialiser(unRobot);
-		avancer(30,unRobot,TRANSITIONS,TRANSITIONS); //(60/2)cm
-
-		//12e partie, tourner de -90degrees
-		reinitialiser(unRobot);
-		tourner(87, unRobot, false);
-
-		//13e partie, avancer de 82.5cm
-		reinitialiser(unRobot);
-		avancer(60,unRobot,TRANSITIONS,TRANSITIONS); //(60 + 45/2)cm
-
-		reinitialiser(unRobot);
-		//14e partie, tourner de 45degrees
-		tourner(40, unRobot, true);//(180-135)degrees
-
-		//15e partie, avancer de 32cm
-		reinitialiser(unRobot);
-		avancer(32,unRobot,TRANSITIONS,TRANSITIONS); //(60 + 45/2)cm
-
-		//15e partie, tourner 5 degres a droite
-		reinitialiser(unRobot);
-		tourner(15, unRobot, true); //(60 + 45/2)cm
-
-		//last sprint!
-		reinitialiser(unRobot);
-		avancer(120,unRobot,TRANSITIONS,TRANSITIONS);
-		reinitialiser(unRobot);
-/*
-
-	reinitialiser(unRobot);
-	tourner(90,unRobot,true);
-	reinitialiser(unRobot);
-	tourner(90,unRobot,false);
-	reinitialiser(unRobot);
-	tourner(180,unRobot,true);
-	reinitialiser(unRobot);
-	tourner(180,unRobot,false);
-	reinitialiser(unRobot);
-	tourner(360,unRobot,true);
-	reinitialiser(unRobot);
-	tourner(360,unRobot,false);
-
-	*/
-	//reinitialiser(unRobot);
-	//tourner(180,unRobot,false);
-	//reinitialiser(unRobot);
-		//arrete les moteurs
-		unRobot.vitesseMoteurDroit = 0;
-		unRobot.vitesseMoteurGauche = 0;
-		MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
-		MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
 }
-
 void avancer(int distanceCm,robot &unRobot,short int transitionGauche, short int transitionDroite)
 {
 
@@ -159,7 +88,7 @@ void tourner(int angle, robot &unRobot, bool tourneGauche){
 	float tourCompletCm = 1.604;//((13.5 * M_PI))*2.42222;
 
 	int init;
-	//Pour initialiser les compteurs avant le d�but, �vite quelques bogues intermittants.
+	//Pour initialiser les compteurs avant le début, évite quelques bogues intermittants.
 	init=ENCODER_Read(ENCODER_RIGHT);
 	init=ENCODER_Read(ENCODER_LEFT);
 
@@ -192,12 +121,12 @@ void reinitialiser(robot &unRobot)
 {
 	THREAD_MSleep(400);
 	int init;
-	//Pour initialiser les compteurs avant le d�but, �vite quelques bogues intermittants.
+	//Pour initialiser les compteurs avant le début, évite quelques bogues intermittants.
 	init=ENCODER_Read(ENCODER_RIGHT);
 	init=ENCODER_Read(ENCODER_LEFT);
 	//variables a Pier-Luc bam d'un coup
 	unRobot.distanceVoulueGauche = 0;
-	unRobot.distanceVoulueDroite = 0; // distance suppos�ment parcourue par le robot;
+	unRobot.distanceVoulueDroite = 0; // distance supposément parcourue par le robot;
 	unRobot.lecturevitesseDroite = 0;
 	unRobot.lecturevitesseGauche = 0;
 	unRobot.vitesseMoteurDroit = 0;
@@ -207,3 +136,102 @@ void reinitialiser(robot &unRobot)
 	//MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
 	//MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
 }
+
+//Fonctions
+bool freq_watch();
+
+
+//Sert à gérer le départ et l'arrêt du ou des programmes en fonction de la durée du 5kHz,
+//La surveillance du signal se fait en temps réel et sans AUCUN MSLEEP !!!!
+void detectionFrequence()
+{
+
+
+	//Vérifie quel est le ROBOT en cours!
+	int estROBOT43 = DIGITALIO_Read(9);
+	LCD_Printf("est robot43? %i", estROBOT43);
+
+	bool etatFrequence = false;
+	bool initTemps= false;
+	bool premierSonEffectuer = false;
+	int duree5khz=0;
+	int temps = 0;
+	//on choisit le bon mode de gestion d'erreur
+	ERROR_SetMode(LCD_ONLY);
+
+	while(1)
+	{
+		bool etatFrequence = freq_watch();
+
+
+
+		/*LCD_ClearAndPrint("valeur1=%d/n",duree5khz);*/
+		if(etatFrequence==1 && initTemps == false)
+		{
+			initTemps = true;
+			temps = SYSTEM_ReadTimerMSeconds();
+			LCD_Printf("inittemps");
+		}
+
+		if (etatFrequence==0 && initTemps == true)
+		{
+			duree5khz=SYSTEM_ReadTimerMSeconds() - temps;
+			initTemps = false;
+			LCD_Printf("falldown");
+
+			if (duree5khz < 2100 && duree5khz > 1900)
+						{
+
+							//Ecrire la fonction qui fait avancer le robot
+							if(premierSonEffectuer == false)
+							{
+								if(estROBOT43 == false)
+								{
+									premierSonEffectuer = true;
+									//partir le robot 14
+									depart14 = true;
+								}
+								else
+									premierSonEffectuer = true;
+
+							}
+							else if(premierSonEffectuer == true && estROBOT43 == true)
+							{
+								//partir le robot 43
+								depart43=true;
+							}
+						}
+
+			else if (/*duree5khz < 5500 && */duree5khz > 4300)
+							{
+								//Ecrire la fonction qui arrête les robots
+								depart14 = false;
+								depart43 = false;
+								arret = true;
+							}
+
+
+
+
+				temps = 0;
+
+			}
+
+
+		}
+
+
+	}
+
+
+
+
+
+
+
+bool freq_watch()
+{
+	return DIGITALIO_Read(10);
+}
+
+
