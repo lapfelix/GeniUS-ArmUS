@@ -9,22 +9,14 @@
  * Creation : 01/10/2014
  * Modifie  : 08/10/2014
  */
-#include <iostream>
-#include <libarmus.h>
-#include <cmath>
-
-
+#include "Armus.h"
 
 int compareContraste()
 {
 	LCD_PrintBmp("genius.bmp");
 	THREAD_MSleep(1000);
 	LCD_ClearAndPrint("Detection du contraste");
-
-
-
-
- ANALOG_Read(2);
+	ANALOG_Read(2);
     return 0;
 }
 
@@ -42,8 +34,8 @@ void comparerAnalog()
 	D2 = ANALOG_Read(2);
 	//D3 = ANALOG_Read(3);
 	//D4 = ANALOG_Read(4);
-	D5 = ANALOG_Read(5);
-	D6 = ANALOG_Read(6);
+	D5 = ANALOG_Read(3);
+	D6 = ANALOG_Read(4);
 
 	/* D3 et D4 ne seront pas utiliser pour la comparaison de contraste.
 	 * On compare la moyenne des 2 extremites.

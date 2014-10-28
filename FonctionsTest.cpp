@@ -69,5 +69,61 @@ void encodeurGaucheTest()
 	MOTOR_SetSpeed(7,0);
 }
 
+void testCouleur()
+{
+	//TODO: un 'if' qui prend la couleur avec le i2c ou analogue dependant du robot
+
+	//le robot 43 a une pin entre le digital 9 et le Vcc
+	bool estRobot43 = (DIGITALIO_Read(9) == 1);
+
+	//initialiser le capteur cest important quand on s'appelle robot 43
+	if(estRobot43)
+		initCapteur();
+
+	while(1)
+	{
+		RgbColor readColor;
+		//step 1
+		if(estRobot43)
+			readColor = getColorI2C();
+		else
+			readColor = getColorAnalog();
+		LCD_ClearAndPrint("R=%d, G=%d, B=%d", readColor.r, readColor.g, readColor.b);
+		//step 2
+        HsbColor colorsHSB = RGBtoHSB(readColor);
+		LCD_Printf("\n H=%.4f, S=%.4f, B=%.4f \n", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
+
+		int laCouleur;
+		if(estRobot43)
+			laCouleur = currentFloorColor(colorsHSB);
+		else
+			laCouleur = currentFloorColorAnalog(colorsHSB);
+
+		//step 3
+		switch(laCouleur){
+			case 0:
+				LCD_Printf("BLANC");break;
+			case 1:
+				LCD_Printf("BLEU");break;
+			case 2:
+				LCD_Printf("ROUGE");break;
+			case 3:
+				LCD_Printf("VERT");break;
+			case 4:
+				LCD_Printf("JAUNE");break;
+			case 5:
+				LCD_Printf("WTF");break;
+			default:
+				LCD_Printf("default");break;
+		}
+
+		THREAD_MSleep(10);
+	}
+}
+
+
+
+
+
 
 

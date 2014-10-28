@@ -1,68 +1,9 @@
 //parce que jsuis bs
 #define ln     LCD_Printf("\n")
 
-#include "detectionSol.h"
+#include "Armus.h"
 
 float hues[4] = {BLUE_HUE,RED_HUE,GREEN_HUE,YELLOW_HUE};
-
-void testCouleur()
-{
-	//TODO: un 'if' qui prend la couleur avec le i2c ou analogue dependant du robot
-
-	//le robot 43 a une pin entre le digital 9 et le Vcc
-	bool estRobot43 = (DIGITALIO_Read(9) == 1);
-
-	//initialiser le capteur cest important quand on s'appelle robot 43
-	if(estRobot43)
-		initCapteur();
-
-	while(1)
-	{
-		RgbColor readColor;
-		//step 1
-		if(estRobot43)
-			readColor = getColor();
-		else
-			readColor = getColorA();
-
-		LCD_ClearAndPrint("R=%d, G=%d, B=%d", readColor.r, readColor.g, readColor.b);
-
-		//step 2
-        HsbColor colorsHSB = RGBtoHSB(readColor);
-        ln;
-		LCD_Printf("H=%.4f, S=%.4f, B=%.4f", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
-		ln;ln;
-
-		int laCouleur;
-
-		if(estRobot43)
-			laCouleur = currentFloorColor(colorsHSB);
-		else
-			laCouleur = currentFloorColorA(colorsHSB);
-
-		//step 3
-		switch(laCouleur){
-			case 0:
-				LCD_Printf("BLANC");break;
-			case 1:
-				LCD_Printf("BLEU");break;
-			case 2:
-				LCD_Printf("ROUGE");break;
-			case 3:
-				LCD_Printf("VERT");break;
-			case 4:
-				LCD_Printf("JAUNE");break;
-			case 5:
-				LCD_Printf("WTF");break;
-			default:
-				LCD_Printf("default");break;
-		}
-
-		THREAD_MSleep(10);
-	}
-
-}
-
 int currentFloorColor(HsbColor readColor)
 {
 
@@ -82,7 +23,7 @@ int currentFloorColor(HsbColor readColor)
 	return 5;
 
 }
-int currentFloorColorA(HsbColor readColor)
+int currentFloorColorAnalog(HsbColor readColor)
 {
 	//TODO: Calibrer ça pour le lecteur analogue. Là yé pas calibré pantoute.
 
@@ -102,7 +43,6 @@ int currentFloorColorA(HsbColor readColor)
 	return 5;
 
 }
-
 bool checkSameHue(float hue1, float hue2)
 {
 	float difference = abs(hue1-hue2);
@@ -114,4 +54,39 @@ bool checkSameHue(float hue1, float hue2)
 	else
 		return false;
 
+}
+HsbColor RGBtoHSB(RgbColor colorsIntRGB)
+{
+	//chaque channel du rgb d'input est un int de 0 à 255 (en theorie)
+	//ici on le convertit en float de 0 à 1
+	//TODO: ici j'inverse VOLONTAIREMENT le bleu et le vert. à arranger.
+    float colorsRGB[3] = {colorsIntRGB.r/255.f, colorsIntRGB.b/255.f, colorsIntRGB.g/255.f};
+    HsbColor colorsHSB;
+    float r = colorsRGB[0], g = colorsRGB[1], b = colorsRGB[2];
+    float K = 0.f;
+
+    if (g < b)
+    {
+        //std::swap(g, b);
+        float tmp = g;
+                g = b;
+                b = tmp;
+
+        K = -1.f;
+    }
+
+    if (r < g)
+    {
+        //std::swap(r, g);
+    	float tmp = r;
+    	        r = g;
+    	        g = tmp;
+
+        K = -2.f / 6.f - K;
+    }
+    float chroma = r - min(g, b);
+    colorsHSB.hue = fabs(K + (g - b) / (6.f * chroma + 1e-20f));
+    colorsHSB.saturation = chroma / (r + 1e-20f);
+    colorsHSB.brightness = r;
+    return colorsHSB;
 }

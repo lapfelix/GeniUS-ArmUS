@@ -1,9 +1,5 @@
-#include "CapteurCouleur.h"
-
+#include "Armus.h"
 int adjd_dev;
-
-using namespace std;
-
 // fonctions globales
 
 //permet de changer la valeur des registres
@@ -163,13 +159,17 @@ int color_Init(int& dev_handle)
 {
 	int error;
 	error = armus::i2c_RegisterDevice(ADJD_S371_QR999_SADR,  100000, 1000, dev_handle);
-
 	return error;
 }
+
+
+/*
+ * Ce qui a été codé par nous.
+ */
 void initCapteur()
 {
 
-	LCD_Printf("LOL HAHAH");
+	LCD_Printf("Init capteurCouleur");
 
 	//initialisation du capteur
 	LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
@@ -186,7 +186,7 @@ void initCapteur()
 
 
 }
-RgbColor getColor()
+RgbColor getColorI2C()
 {
 	int red, blue, green, clear;
 	color_Read(red, blue, green, clear);
@@ -194,8 +194,30 @@ RgbColor getColor()
 	readColor.r = red;
 	readColor.g = green;
 	readColor.b = blue;
-
 	return readColor;
+}
+
+RgbColor getColorAnalog()
+{
+	RgbColor readColors;
+	LCD_ClearAndPrint("Test du HDJD-S822\n");
+	int red = 0;
+	int green = 0;
+	int blue = 0;
+	while(1)
+	{
+		DIGITALIO_Write(9, 1);		// met la LED du senseur ON
+		THREAD_MSleep (50);
+		// lit les 3 canaux de couleurs et compense les différences de sensibilités
+		// le rouge etant le canal le plus sensible
+		int red = ANALOG_Read(1) * 10;
+		int green = ANALOG_Read(2) * 12;
+		int blue = ANALOG_Read(3) * 19;
+		DIGITALIO_Write(9, 0);		// met la LED du senseur OFF
+		LCD_ClearAndPrint("Couleurs:\nRouge: %d\nVert:  %d\nBleu:  %d", red, green, blue);
+		THREAD_MSleep (50);
+	}
+	return readColors;
 }
 
 
