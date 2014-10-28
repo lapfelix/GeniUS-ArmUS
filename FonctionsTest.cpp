@@ -78,8 +78,8 @@ void testCouleur()
 	//initialiser le capteur cest important quand on s'appelle robot 43
 	if(estRobot43)
 		initCapteurI2C();
-	ofstream fichier;
-	fichier.open("couleur.txt");
+	//ofstream fichier;
+	//fichier.open("couleur.txt");
 	while(1)
 	{
 		RgbColor readColor;
@@ -88,13 +88,33 @@ void testCouleur()
 			readColor = getColorI2C();
 		else
 			readColor = getColorAnalog();
-		LCD_Printf("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
-		fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
+		LCD_ClearAndPrint("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
+
+		//fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
 		//step 2
         HsbColor colorsHSB = RGBtoHSB(readColor);
-		//LCD_Printf(" H=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
+		LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
 
-		string laCouleur;
+		int laCouleur = currentFloorColor(colorsHSB,estRobot43);
+		LCD_Printf("\n");
+		switch(laCouleur){
+					case 0:
+						LCD_Printf("BLANC");break;
+					case 1:
+						LCD_Printf("BLEU");break;
+					case 2:
+						LCD_Printf("ROUGE");break;
+					case 3:
+						LCD_Printf("VERT");break;
+					case 4:
+						LCD_Printf("JAUNE");break;
+					case 5:
+						LCD_Printf("WTF");break;
+					default:
+						LCD_Printf("default");break;
+				}
+
+		//LCD_Printf("%s",laCouleur.c_str());
 		/*if(estRobot43)
 			laCouleur = currentFloorColor(colorsHSB);*/
 		//else
