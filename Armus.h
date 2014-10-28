@@ -5,6 +5,7 @@
  */
 #ifndef ARMUS_H
 #define ARMUS_H
+
 #include <iostream>
 #include <libarmus.h>
 #include <cmath>
@@ -48,7 +49,6 @@ struct HsbColor
 		float saturation;
 		float brightness;
 };
-#endif
 using namespace std;
 /*****************************************************************************
  * ***************************************************************************
@@ -120,7 +120,7 @@ RgbColor getColorAnalog();
 #define YELLOW_HUE				0.870
 
 bool checkSameHue(float, float);
-int currentFloorColor(HsbColor);
+int currentFloorColor(HsbColor, bool);
 string currentFloorColorAnalog(HsbColor);
 HsbColor RGBtoHSB(RgbColor );
 
@@ -136,3 +136,5 @@ void encodeurGaucheTest();
 void encodeurDroitTest();
 void testCouleur();
 void testInfrarouge();
+
+#endif

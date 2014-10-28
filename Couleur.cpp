@@ -1,18 +1,25 @@
 //parce que jsuis bs
 #define ln     LCD_Printf("\n")
 
+
 #include "Armus.h"
 float hues[4] = {BLUE_HUE,RED_HUE,GREEN_HUE,YELLOW_HUE};
-int currentFloorColor(HsbColor readColor)
+int currentFloorColor(HsbColor readColor, bool isRobot43)
 {
+	string liaisonCouleur[] = {"BLANC","BLEU","ROUGE","VERT","JAUNE","ERREUR"};
 
 	//algorithme pour detecter le blanc (ça inclut le gris foncé et mm le noir, pour être encore plus fiable)
-	if((readColor.saturation < 0.3 && readColor.brightness > 0.38) || readColor.saturation < 0.2)
+	if((readColor.saturation < 0.3 && readColor.brightness > 0.38) || (readColor.saturation < 0.2 && readColor.brightness > 0.2))
 		return WHITE_COLOR;
 
 	for(int i = 0; i<4; i++)
 	{
-		if(checkSameHue(readColor.hue,hues[i]))
+		float modif = 0.f;
+		//cas spécial pour le vert
+		if((!isRobot43) && i == 2)
+			modif = 0.17;
+
+		if(checkSameHue(readColor.hue,hues[i]+modif))
 		{
 			return i+1;
 		}
@@ -22,9 +29,12 @@ int currentFloorColor(HsbColor readColor)
 	return 5;
 
 }
+//on va deleter ça
 string currentFloorColorAnalog(HsbColor readColor)
 {
+
 	string liaisonCouleur[] = {"BLANC","BLEU","ROUGE","VERT","JAUNE","ERREUR"};
+
 	//algorithme pour detecter le blanc (ça inclut le gris foncé et mm le noir, pour être encore plus fiable)
 	if((readColor.saturation < 0.3 && readColor.brightness > 0.38) || readColor.saturation < 0.2)
 		return WHITE_COLOR;
