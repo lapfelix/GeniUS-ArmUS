@@ -8,7 +8,6 @@
 #include <math.h>
 #include <libarmus.h>
 #include "Armus.h"
-#include "DetectionFrequence.h"
 
 
 const int TEMPS = 250;//msecondes
@@ -51,6 +50,7 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 	THREAD thread_frequence;
 	thread_frequence = THREAD_CreateSimple(detectionFrequence);
+	thread_infrarouge = THREAD_CreateSimple(testInfrarouge);
 	LCD_Printf("start program\n");
 	while (arret!=true)
 	{
@@ -140,8 +140,10 @@ void reinitialiser(robot &unRobot)
 
 
 //Fonctions
-bool freq_watch();
-
+bool freq_watch()
+{
+	return DIGITALIO_Read(10);
+}
 
 //Sert à gérer le départ et l'arrêt du ou des programmes en fonction de la durée du 5kHz,
 //La surveillance du signal se fait en temps réel et sans AUCUN MSLEEP !!!!
@@ -204,7 +206,7 @@ void detectionFrequence()
 							}
 						}
 			//duree5khz < 5500 &&
-			else if (duree5khz > 4300)
+			else if (duree5khz > 4300 || (SYSTEM_ReadTimerMSeconds() - temps)>4000)
 							{
 								//Ecrire la fonction qui arrête les robots
 								depart14 = false;
@@ -227,14 +229,4 @@ void detectionFrequence()
 
 
 
-
-//KESS� �A
-/*
-
-bool freq_watch()
-{
-	return DIGITALIO_Read(10);
-}
-
-*/
 

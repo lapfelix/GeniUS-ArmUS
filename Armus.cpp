@@ -11,11 +11,12 @@
 #include "Armus.h"
 #include "FonctionInfrarouge.h"
 #include "detectionSol.h"
+#include "CapteurContraste.h"
 
 int main()
 {
 	const short int TRANSITIONS = 10;
-	short int MODE=1; //0: TEST   1:	DEV
+	short int MODE=3; //0: TEST   1:	DEV
 
 	//rentre en mode test si le bumper front est enfoncé lorsqu'on pèse sur user
 	if(DIGITALIO_Read(BMP_FRONT) == 1)

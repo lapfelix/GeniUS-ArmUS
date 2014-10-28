@@ -14,5 +14,5 @@
 #endif /* FONCTIONINFRAROUGE_H_ */
 
 void testInfrarouge();
-int LecturePin();
-int CalculDistance(int);
+//int LecturePin();
+//int CalculDistance(int);

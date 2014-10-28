@@ -78,12 +78,12 @@ Retour :
  * */
 
 
-
+/*
 //THREAD!
 
 //thread function prototype
 void FonctionThread();
-int main()
+int vfg()
 {
 //allocate the thread handle
  THREAD thread1;
@@ -112,5 +112,4 @@ while(1)
  THREAD_MSleep(temps_de_pause);
 }
 }
-
-
+*/
