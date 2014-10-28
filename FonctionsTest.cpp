@@ -4,11 +4,10 @@
  *  Created on: 2014-10-02
  *      Author: lusf1702
  */
-#include <iostream>
-#include <libarmus.h>
+
 #include "Armus.h"
-
-
+#include <iostream>
+#include <fstream>
 void parcoursTest(robot &unRobot, short int TRANSITIONS)
 {
 	/*
@@ -67,6 +66,61 @@ void encodeurGaucheTest()
 		LCD_Printf("G: %i \n",encodeurGauche);
 	}
 	MOTOR_SetSpeed(7,0);
+}
+
+void testCouleur()
+{
+	//TODO: un 'if' qui prend la couleur avec le i2c ou analogue dependant du robot
+
+	//le robot 43 a une pin entre le digital 9 et le Vcc
+	bool estRobot43 = (DIGITALIO_Read(9) == 1);
+
+	//initialiser le capteur cest important quand on s'appelle robot 43
+	if(estRobot43)
+		initCapteurI2C();
+	ofstream fichier;
+	fichier.open("couleur.txt");
+	while(1)
+	{
+		RgbColor readColor;
+		//step 1
+		if(estRobot43)
+			readColor = getColorI2C();
+		else
+			readColor = getColorAnalog();
+		LCD_Printf("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
+		fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
+		//step 2
+        HsbColor colorsHSB = RGBtoHSB(readColor);
+		//LCD_Printf(" H=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
+
+		string laCouleur;
+		/*if(estRobot43)
+			laCouleur = currentFloorColor(colorsHSB);*/
+		//else
+			//laCouleur = currentFloorColorAnalog(colorsHSB);
+		//LCD_Printf("%s",laCouleur.c_str());
+	}
+}
+
+
+
+THREAD thread_infrarouge;
+void testInfrarouge()
+{
+
+	LCD_ClearAndPrint("Test Infrarouge\n");
+
+		int sortie = 0;
+		sortie = IR_Detect(IR_FRONT);
+		switch(sortie)
+		{
+			case 0: LCD_Printf("RIEN\n");break;
+			case 1: LCD_Printf("DROITE\n");break;
+			case 2: LCD_Printf("GAUCHE\n");break;
+			case 3: LCD_Printf("DROITE ET GAUCHE\n");break;
+		}
+		THREAD_MSleep(100);
 }
 
 

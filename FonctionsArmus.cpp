@@ -50,7 +50,7 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 
 	THREAD thread_frequence;
 	thread_frequence = THREAD_CreateSimple(detectionFrequence);
-	thread_infrarouge = THREAD_CreateSimple(testInfrarouge);
+//	thread_infrarouge = THREAD_CreateSimple(testInfrarouge);
 	LCD_Printf("start program\n");
 	while (arret!=true)
 	{

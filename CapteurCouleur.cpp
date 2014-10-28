@@ -1,9 +1,5 @@
-#include "CapteurCouleur.h"
-
+#include "Armus.h"
 int adjd_dev;
-
-using namespace std;
-
 // fonctions globales
 
 //permet de changer la valeur des registres
@@ -163,13 +159,16 @@ int color_Init(int& dev_handle)
 {
 	int error;
 	error = armus::i2c_RegisterDevice(ADJD_S371_QR999_SADR,  100000, 1000, dev_handle);
-
 	return error;
 }
-void initCapteur()
-{
 
-	LCD_Printf("LOL HAHAH");
+
+/*
+ * Ce qui a été codé par nous.
+ */
+void initCapteurI2C()
+{
+	LCD_Printf("Init capteurCouleur");
 
 	//initialisation du capteur
 	LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
@@ -183,10 +182,9 @@ void initCapteur()
 	integrationTime_SetValue(INTEGRATION_GREEN, 2*255*(175.f/183.f));
 	integrationTime_SetValue(INTEGRATION_BLUE, 2*255*(222.f/175.f));
 	integrationTime_SetValue(INTEGRATION_CLEAR, 2*255);
-
-
 }
-RgbColor getColor()
+
+RgbColor getColorI2C()
 {
 	int red, blue, green, clear;
 	color_Read(red, blue, green, clear);
@@ -194,8 +192,22 @@ RgbColor getColor()
 	readColor.r = red;
 	readColor.g = green;
 	readColor.b = blue;
-
 	return readColor;
+}
+
+RgbColor getColorAnalog()
+{
+	RgbColor readColors;
+
+	DIGITALIO_Write(9, 1);		// met la LED du senseur ON
+	THREAD_MSleep (200);
+	readColors.r = (int)((float)ANALOG_Read(1) * 1.8);
+	readColors.g = (int)((float)ANALOG_Read(2) * 1.5);
+	readColors.b = (int)((float)ANALOG_Read(3) * 2);
+
+	DIGITALIO_Write(9, 0);		// met la LED du senseur OFF
+	THREAD_MSleep (500);
+	return readColors;
 }
 
 

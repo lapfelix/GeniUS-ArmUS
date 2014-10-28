@@ -9,22 +9,14 @@
  * Creation : 01/10/2014
  * Modifie  : 08/10/2014
  */
-#include <iostream>
-#include <libarmus.h>
-#include <cmath>
-
-
+#include "Armus.h"
 
 int compareContraste()
 {
 	LCD_PrintBmp("genius.bmp");
 	THREAD_MSleep(1000);
 	LCD_ClearAndPrint("Detection du contraste");
-
-
-
-
- ANALOG_Read(2);
+	ANALOG_Read(2);
     return 0;
 }
 
@@ -67,49 +59,3 @@ void comparerAnalog()
 		//Faire reculer le robot! (il a dépasser les bonnes couleurs)
 	}
 }
-
-/*int ANALOG _Read(int analog_number)
-Retourne la valeur lue sur un port analogique. La valeur retournée
-est entre 0 et 1023 et correspond à un signal entre 0 et 5V.
-Argument :
- - analog_number: numéro de l'entrée analogique (entre 1 et 8).
-Retour :
- - une valeur sur 10 bits (entre 0 et 1023) de la tension de 5V.
- * */
-
-
-/*
-//THREAD!
-
-//thread function prototype
-void FonctionThread();
-int vfg()
-{
-//allocate the thread handle
- THREAD thread1;
- //start thread
- thread1 = THREAD_CreateSimple(FonctionThread);
- //THREAD_Destroy(THREAD thread)
-
-
- //insert main code here
- //the code will continue executing
- //the code from the funtion FonctionThread will
- // execute at the same time
-
- //destroy thread (not necessary)
- THREAD_Destroy(&thread1);
- return 0;
-}
-void FonctionThread()
-{
- int temps_de_pause = 1000;
-// This part of the code will be executed only one time
-LCD_Printf("debut du thread");
-while(1)
-{
- //this part executes until the thread is destroyed
- THREAD_MSleep(temps_de_pause);
-}
-}
-*/

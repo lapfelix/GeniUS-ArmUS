@@ -4,19 +4,12 @@
  * Creation : 01/10/2014
  * Modifie  : 08/10/2014
  */
-#include <iostream>
-#include <libarmus.h>
-#include <cmath>
-#include "CapteurCouleur.h"
 #include "Armus.h"
-#include "FonctionInfrarouge.h"
-#include "detectionSol.h"
-#include "CapteurContraste.h"
 
 int main()
 {
 	const short int TRANSITIONS = 10;
-	short int MODE=3; //0: TEST   1:	DEV
+	short int MODE=2; //0: TEST   1:	DEV
 
 	//rentre en mode test si le bumper front est enfoncé lorsqu'on pèse sur user
 	if(DIGITALIO_Read(BMP_FRONT) == 1)
