@@ -16,7 +16,7 @@ const int TEMPS = 100;//msecondes
 const float FC_VITESSE = 1;//facteur de correction de la vitesse
 const float FC_DISTANCE = 0.5;//facteur de correction de la distance
 
-int main()
+int main3()
 {
 	int consigneVitesse = 10;//transitions / valeur de temps
 	int distanceVoulue = 0; // distance supposément parcourue par le robot;

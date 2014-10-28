@@ -1,34 +1,10 @@
-#include <libarmus.h>
-#include <stdint.h>
-
 #include "CapteurCouleur.h"
-
-#define ADJD_S371_QR999_SADR 	0x74
-#define CAP_RED					0x6
-#define CAP_GREEN				0x7
-#define CAP_BLUE				0x8
-#define CAP_CLEAR				0x9
-#define INTEGRATION_RED			10
-#define INTEGRATION_GREEN		12
-#define INTEGRATION_BLUE		14
-#define INTEGRATION_CLEAR		16
-#define ADJD_REG_CTRL			0
-#define ADJD_REG_CONFIG			1
-#define DATA_RED_LO				64
-#define DATA_GREEN_LO			66
-#define DATA_BLUE_LO			68
-#define DATA_CLEAR_LO			70
-
-#define CTRL_GSSR				0
-#define CTRL_GOFS				1
-
-#define CONFIG_TOFS				0
 
 int adjd_dev;
 
+using namespace std;
 
 // fonctions globales
-
 
 //permet de changer la valeur des registres
 void adjd_SetRegister(unsigned char reg, unsigned char val)
@@ -144,7 +120,7 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GOFS);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(5);
 	}
 
 	//lecture avec eclairage
@@ -152,7 +128,7 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GSSR);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(5);
 	}
 
 	//eteindre la led
@@ -171,7 +147,7 @@ void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& 
 	adjd_SetRegister(ADJD_REG_CTRL, 1 << CTRL_GSSR);
 	while(adjd_ReadRegister(ADJD_REG_CTRL))
 	{
-		THREAD_MSleep(50);
+		THREAD_MSleep(5);
 	}
 	led_TurnOff();
 
@@ -190,32 +166,36 @@ int color_Init(int& dev_handle)
 
 	return error;
 }
-
-void testCouleur()
+void initCapteur()
 {
 
 	LCD_Printf("LOL HAHAH");
-	int red, blue, green, clear;
 
 	//initialisation du capteur
 	LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
 
-	cap_SetValue(CAP_RED, 15);
-	cap_SetValue(CAP_GREEN, 15);
-	cap_SetValue(CAP_BLUE, 15);
-	cap_SetValue(CAP_CLEAR, 15);
+	cap_SetValue(CAP_RED, 10);
+	cap_SetValue(CAP_GREEN, 10);
+	cap_SetValue(CAP_BLUE, 10);
+	cap_SetValue(CAP_CLEAR, 10);
 
-	integrationTime_SetValue(INTEGRATION_RED, 255);
-	integrationTime_SetValue(INTEGRATION_GREEN, 255);
-	integrationTime_SetValue(INTEGRATION_BLUE, 255);
-	integrationTime_SetValue(INTEGRATION_CLEAR, 255);
+	integrationTime_SetValue(INTEGRATION_RED, 2*255);
+	integrationTime_SetValue(INTEGRATION_GREEN, 2*255*(175.f/183.f));
+	integrationTime_SetValue(INTEGRATION_BLUE, 2*255*(222.f/175.f));
+	integrationTime_SetValue(INTEGRATION_CLEAR, 2*255);
 
-	while(1)
-	{
-		color_Read(red, blue, green, clear);
-		LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d", red, green, blue, clear);
-		THREAD_MSleep(10);
-	}
 
 }
+RgbColor getColor()
+{
+	int red, blue, green, clear;
+	color_Read(red, blue, green, clear);
+	RgbColor readColor;
+	readColor.r = red;
+	readColor.g = green;
+	readColor.b = blue;
+
+	return readColor;
+}
+
 

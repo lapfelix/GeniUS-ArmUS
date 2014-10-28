@@ -8,7 +8,7 @@
 #include <iostream>
 #include <math.h>
 #include <libarmus.h>
-#include "FonctionInfrarougw.h"
+#include "FonctionInfrarouge.h"
 
 int LecturePin()
 {

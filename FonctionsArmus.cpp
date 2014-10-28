@@ -8,6 +8,7 @@
 #include <math.h>
 #include <libarmus.h>
 #include "Armus.h"
+#include "DetectionFrequence.h"
 
 
 const int TEMPS = 250;//msecondes
@@ -58,7 +59,7 @@ void parcours(robot &unRobot, short int TRANSITIONS)
 		if (depart43==true)
 			LCD_Printf("depart43\n");
 	}
-LCD_ClearAndPrint("FINI");
+	LCD_ClearAndPrint("FINI");
 
 }
 void avancer(int distanceCm,robot &unRobot,short int transitionGauche, short int transitionDroite)
@@ -137,6 +138,7 @@ void reinitialiser(robot &unRobot)
 	//MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
 }
 
+
 //Fonctions
 bool freq_watch();
 
@@ -165,7 +167,7 @@ void detectionFrequence()
 
 
 
-		/*LCD_ClearAndPrint("valeur1=%d/n",duree5khz);*/
+		//LCD_ClearAndPrint("valeur1=%d/n",duree5khz);
 		if(etatFrequence==1 && initTemps == false)
 		{
 			initTemps = true;
@@ -201,8 +203,8 @@ void detectionFrequence()
 								depart43=true;
 							}
 						}
-
-			else if (/*duree5khz < 5500 && */duree5khz > 4300)
+			//duree5khz < 5500 &&
+			else if (duree5khz > 4300)
 							{
 								//Ecrire la fonction qui arrÃªte les robots
 								depart14 = false;
@@ -226,12 +228,13 @@ void detectionFrequence()
 
 
 
-
-
+//KESSÉ ÇA
+/*
 
 bool freq_watch()
 {
 	return DIGITALIO_Read(10);
 }
 
+*/
 
