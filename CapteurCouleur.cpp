@@ -1,7 +1,7 @@
 #include <libarmus.h>
 #include <stdint.h>
 
-#include "CapteurCouleur.cpp"
+#include "CapteurCouleur.h"
 
 #define ADJD_S371_QR999_SADR 	0x74
 #define CAP_RED					0x6
@@ -191,12 +191,14 @@ int color_Init(int& dev_handle)
 	return error;
 }
 
-int testCouleur()
+void testCouleur()
 {
+
+	LCD_Printf("LOL HAHAH");
 	int red, blue, green, clear;
 
 	//initialisation du capteur
-	ERROR_CHECK(color_Init(adjd_dev));
+	LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
 
 	cap_SetValue(CAP_RED, 15);
 	cap_SetValue(CAP_GREEN, 15);
@@ -212,9 +214,8 @@ int testCouleur()
 	{
 		color_Read(red, blue, green, clear);
 		LCD_ClearAndPrint("R=%d, G=%d, B=%d, C=%d", red, green, blue, clear);
-		THREAD_MSleep(1000);
+		THREAD_MSleep(10);
 	}
 
-	return 0;
 }
 
