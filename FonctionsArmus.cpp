@@ -13,147 +13,253 @@
 const int TEMPS = 250;//msecondes
 const float FC_VITESSE = 1;//facteur de correction de la vitesse
 const float FC_DISTANCE = 0.5;//facteur de correction de la distance
-bool depart14 = false;
-bool depart43 = false;
+bool depart14;
+bool depart43;
 bool arret = false;
 void detectionFrequence();
+void avancerDroit();
+
+bool pulse250=true;
+int timer3 = 0;
 
 
-void vitesse(robot &unRobot,short int transitionsGauche,short int transitionsDroite)
-{
-	THREAD_MSleep(TEMPS);
-	unRobot.lecturevitesseDroite = ENCODER_Read(ENCODER_RIGHT);
-	unRobot.lecturevitesseGauche = ENCODER_Read(ENCODER_LEFT);
-	unRobot.distanceVoulueGauche += transitionsGauche;
-	unRobot.distanceVoulueDroite += transitionsDroite;
-	unRobot.distanceMoteurDroit += unRobot.lecturevitesseDroite;
-	unRobot.distanceMoteurGauche += unRobot.lecturevitesseGauche;
-
-
-	int correctionGauche = 0;
-	int correctionDroit = 0;
-
-	unRobot.vitesseMoteurDroit = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseDroite-transitionsDroite)-FC_DISTANCE*(float)(unRobot.distanceMoteurDroit-unRobot.distanceVoulueDroite));
-	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
-//	unRobot.vitesseMoteurGauche = (int)(-FC_VITESSE*(float)(unRobot.lecturevitesseGauche-transitionsGauche)-FC_DISTANCE*(float)(unRobot.distanceMoteurGauche-unRobot.distanceVoulueGauche));
-
-	MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
-	MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
-}
-
-void parcours(robot &unRobot, short int TRANSITIONS)
+void parcours(robot &unRobot, short int OverrideFrequencyStart)
 {
 	//Variables
 	bool estROBOT43; //ROBOT_43 part en premier!!
+	bool premierePasse = true;
 	bool premierSonEffectuer = false;
+	bool IRgauche=false;
+	bool IRdroite=false;
+	int couleur=0;
+	int sortie=0;
 
+	int timer1=0, //Pour la détection dobjet en avant
+		tempsDeTournage; //Pour le temps a tourner
+	bool cannette=false;
 
-	THREAD thread_frequence;
+	//DEPART DES THREADS
+	THREAD thread_frequence, thread_couleur;
 	thread_frequence = THREAD_CreateSimple(detectionFrequence);
-//	thread_infrarouge = THREAD_CreateSimple(testInfrarouge);
-	LCD_Printf("start program\n");
-	while (arret!=true)
+	thread_couleur = THREAD_CreateSimple(getCurrentColor);
+
+if(OverrideFrequencyStart==1)
+{
+	depart14=true;
+	depart43=true;
+}
+	//PROGRAMME
+	//LCD_Printf("start program\n");
+	LCD_PrintBmp("genius.bmp");
+
+	while (arret!=true) // Thread detectionFrequence gere l'arret du programme.
 	{
-		if (depart14==true)
+
+		//if (SYSTEM_ReadTimerMSeconds() - timer3>=250)
+		//	pulse250=true;
+
+
+		//METHODE 1 : Les 2 robots utilisent la meme technique sur le parcours
+		if (depart14==true || depart43==true)
+		{
+			if(premierePasse==true)
+			{
+
+				//vitesse(unRobot,30,30);
+
+				avancerDroit();
+
+				premierePasse=false;
+			}
+			//----------------------------------------------
+			//-------------Detection Couleur----------------
+			//----------------------------------------------
+			switch(couleurCourrante())
+			{
+				case 0:
+					//LCD_Printf("BLANC");break;
+					break;
+				case 1:
+					//LCD_Printf("BLEU");break;
+					arret=true;
+					break;
+				case 2:
+					//LCD_Printf("ROUGE");break;
+					//----------------------------------------------
+					//------------Detection conraste----------------
+					//----------------------------------------------
+					if(getContraste() > 220)
+					{
+						//Detecte correctement une difference de contraste avec le rouge et le vert seulement!
+						//Anyway, on utilise ca juste pour le rouge
+
+						//SI LE CONTRASTE est detecter, le robot se dirige vers le rouge a droite
+						//**Le capteur de contraste DOIT etre a droite!
+
+						//Devier vers la gauche
+						MOTOR_SetSpeed(7,80);
+						MOTOR_SetSpeed(8,100);
+						THREAD_MSleep(1000);
+
+						//Redevier
+						MOTOR_SetSpeed(7,100);
+						MOTOR_SetSpeed(8,80);
+						THREAD_MSleep(500);
+
+						avancerDroit();
+					}
+					else
+					{
+						//Devier vers la gauche
+						MOTOR_SetSpeed(7,100);
+						MOTOR_SetSpeed(8,80);
+						THREAD_MSleep(1000);
+
+						//Redevier
+						MOTOR_SetSpeed(7,80);
+						MOTOR_SetSpeed(8,100);
+						THREAD_MSleep(500);
+
+						avancerDroit();
+					}
+					break;
+				case 3:
+					//LCD_Printf("VERT");break;
+					arret=true;
+					break;
+				case 4:
+					//LCD_Printf("JAUNE");break;
+					break;
+				case 5:
+					//LCD_Printf("WTF");break;
+					break;
+				default:
+					//LCD_Printf("default");break;
+					break;
+			}
+
+			//----------------------------------------------
+			//------------Detection Infrarouge--------------
+			//----------------------------------------------
+			switch(IR_Detect(IR_FRONT))
+			{
+				case 0: IRgauche=false;IRdroite=false;break;
+				case 1: IRdroite=true;IRgauche=false;break;
+				case 2: IRdroite=false;IRgauche=true;break;
+				case 3: IRdroite=true;IRgauche=true;break;
+			}
+			//----------------------------------------------
+			//tourne a droite si obstacle a gauche
+			if(IRgauche==false && IRdroite == false)
+			{
+					//avance si rien de spécial
+					avancerDroit();
+
+			}
+			else if(IRgauche==true && IRdroite == false && timer1 != 0)
+			{
+				//dévie vers la droite si obstacle trouvé
+				//***Pas sure que le robot détecte comme faut juste 1 capteur
+				MOTOR_SetSpeed(7,100);
+				MOTOR_SetSpeed(8,80);
+			}
+			else if(IRdroite==true && IRdroite == false && timer1 != 0)
+			{
+				//dévie vers la gauche si obstacle trouvé
+				//***Pas sure que le robot détecte comme faut juste 1 capteur
+				MOTOR_SetSpeed(7,80);
+				MOTOR_SetSpeed(8,100);
+			}
+			else // 2 détecteurs activés
+			{
+
+				//Stop les moteurs
+				MOTOR_SetSpeed(7,0);
+				MOTOR_SetSpeed(8,0);
+				timer1= SYSTEM_ReadTimerMSeconds();
+
+				//Attend 1 secondes
+				THREAD_MSleep(1000);
+
+				//Affiche la valeur lu des IR
+				//***Si il n'y a plus d'objet devant, il donne 1 au lieu de 3!! On sait pas pourquoi
+				LCD_Printf("IR : %d",IR_Detect(IR_FRONT));
+
+				//Les 2 detecteurs sont toujours actifs
+				//DONC, ce nest pas un objet mouvant (ce nest pas un robot)
+				if(IR_Detect(IR_FRONT) == 1)
+				{
+					//Tourne a droite sur lui meme tant que le mur est present devant les capteurs
+					//pendant 1 secondes! Pas plus compliqué que ca sinon ca chie
+					MOTOR_SetSpeed(7,50);
+					MOTOR_SetSpeed(8,-50);
+					THREAD_MSleep(1000);
+
+					//Avancer pendant 1 seconde
+					avancerDroit();
+					THREAD_MSleep(1000);
+
+					//Retourner pendant 1 seconde
+					MOTOR_SetSpeed(7,-50);
+					MOTOR_SetSpeed(8,50);
+					THREAD_MSleep(1000);
+
+				}
+
+
+			}
+
+
+
+		}
+
+
+
+		/* METHODE 2 : Les 2 robots ont un code different
+		if (depart14==true) // Programme du robot 14
+			{
 			LCD_Printf("depart14\n");
-		if (depart43==true)
+			}
+
+		if (depart43==true) // Programme du robot 43
 			LCD_Printf("depart43\n");
+		*/
 	}
+
+	//Stop les moteurs
+	MOTOR_SetSpeed(7,0);
+	MOTOR_SetSpeed(8,0);
+
 	LCD_ClearAndPrint("FINI");
 
 }
-void avancer(int distanceCm,robot &unRobot,short int transitionGauche, short int transitionDroite)
+
+
+void avancerDroit()
 {
-
-	unRobot.vitesseMoteurDroit = 30;
-	unRobot.vitesseMoteurGauche = 30;
-
-	float nbTransitions = distanceCm / 0.43;
-	while((unRobot.distanceMoteurGauche+unRobot.distanceMoteurDroit)/2<=nbTransitions)
+	if(DIGITALIO_Read(9) == 1) //Si bool estRobot43;
 	{
-		int moyenneDistance = (unRobot.distanceMoteurGauche+unRobot.distanceMoteurDroit)/2;
-		LCD_Printf("%i \n",moyenneDistance);
-		//if(moyenneDistance >= nbTransitions*0.75)
-		//{
-		//	vitesse(unRobot,5,5);
-		//}
-		//else
-		//{
-			vitesse(unRobot,10,10);
-		//}
-	}
-	LCD_Printf("STOP \n");
-}
-
-void tourner(int angle, robot &unRobot, bool tourneGauche){
-	float tourCompletCm = 1.604;//((13.5 * M_PI))*2.42222;
-
-	int init;
-	//Pour initialiser les compteurs avant le dÃ©but, Ã©vite quelques bogues intermittants.
-	init=ENCODER_Read(ENCODER_RIGHT);
-	init=ENCODER_Read(ENCODER_LEFT);
-
-	if(tourneGauche)
-	{
-		unRobot.distanceMoteurGauche = 0;
-		while(unRobot.distanceMoteurGauche <= (int)((angle - 15)/tourCompletCm))
-		{
-			unRobot.distanceMoteurGauche += ENCODER_Read(ENCODER_LEFT);
-			MOTOR_SetSpeed(MOTOR_LEFT,35);
-			MOTOR_SetSpeed(MOTOR_RIGHT,0);
-			//LCD_Printf("lol %i vs %f\n",(int)((tourCompletCm *((float)angle/360.f)*2.9)),((tourCompletCm *((float)angle/360.f)*2.9)));
-			//vitesse(unRobot,5,0);
-		}
+		MOTOR_SetSpeed(7,96);
+		MOTOR_SetSpeed(8,100);
 	}
 	else
 	{
-		unRobot.distanceMoteurDroit = 0;
-				while(unRobot.distanceMoteurDroit <= (int)((angle - 15)/tourCompletCm))
-				{
-					unRobot.distanceMoteurDroit += ENCODER_Read(ENCODER_RIGHT);
-					MOTOR_SetSpeed(MOTOR_LEFT,0);
-					MOTOR_SetSpeed(MOTOR_RIGHT,35);
-		}
+		MOTOR_SetSpeed(7,100);
+		MOTOR_SetSpeed(8,100);
 	}
 }
 
 
-void reinitialiser(robot &unRobot)
-{
-	THREAD_MSleep(400);
-	int init;
-	//Pour initialiser les compteurs avant le dÃ©but, Ã©vite quelques bogues intermittants.
-	init=ENCODER_Read(ENCODER_RIGHT);
-	init=ENCODER_Read(ENCODER_LEFT);
-	//variables a Pier-Luc bam d'un coup
-	unRobot.distanceVoulueGauche = 0;
-	unRobot.distanceVoulueDroite = 0; // distance supposÃ©ment parcourue par le robot;
-	unRobot.lecturevitesseDroite = 0;
-	unRobot.lecturevitesseGauche = 0;
-	unRobot.vitesseMoteurDroit = 0;
-	unRobot.vitesseMoteurGauche = 0;
-	unRobot.distanceMoteurDroit=0;
-	unRobot.distanceMoteurGauche=0;
-	//MOTOR_SetSpeed(7,unRobot.vitesseMoteurGauche);
-	//MOTOR_SetSpeed(8,unRobot.vitesseMoteurDroit);
-}
-
-
-//Fonctions
-bool freq_watch()
-{
-	return DIGITALIO_Read(10);
-}
-
-//Sert Ã  gÃ©rer le dÃ©part et l'arrÃªt du ou des programmes en fonction de la durÃ©e du 5kHz,
-//La surveillance du signal se fait en temps rÃ©el et sans AUCUN MSLEEP !!!!
+//Sert Ã  gerer le depart et l'arret du ou des programmes en fonction de la duree du 5kHz,
+//La surveillance du signal se fait en temps reel et sans AUCUN MSLEEP !!!!
 void detectionFrequence()
 {
 
 
+
 	//VÃ©rifie quel est le ROBOT en cours!
 	int estROBOT43 = DIGITALIO_Read(9);
-	LCD_Printf("est robot43? %i", estROBOT43);
+	//LCD_Printf("est robot43? %i", estROBOT43);
 
 	bool etatFrequence = false;
 	bool initTemps= false;
@@ -165,7 +271,7 @@ void detectionFrequence()
 
 	while(1)
 	{
-		bool etatFrequence = freq_watch();
+		bool etatFrequence = DIGITALIO_Read(10);
 
 
 
@@ -226,6 +332,10 @@ void detectionFrequence()
 
 
 	}
+
+
+
+
 
 
 
