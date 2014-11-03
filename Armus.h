@@ -35,6 +35,7 @@ struct robot
 		int vitesseMoteurGauche;
 		int distanceMoteurDroit;
 		int distanceMoteurGauche;
+		bool estRobot43;
 };
 
 struct RgbColor
@@ -59,6 +60,7 @@ int distance();
 void vitesse(robot&,short int,short int);
 void avancer(int,robot&,short int,short int);
 void parcours(robot&,short int);
+void parcours2(robot&, bool);
 void reinitialiser(robot&);
 void tourner(int, robot&, bool);
 
@@ -105,7 +107,7 @@ RgbColor getColorAnalog();
 
 /*****************************************************************************
  * ***************************************************************************
- * DetectionSol
+ * Couleur.cpp
  * ***************************************************************************
  *****************************************************************************/
 #define WHITE_COLOR				0
@@ -113,6 +115,8 @@ RgbColor getColorAnalog();
 #define RED_COLOR				2
 #define GREEN_COLOR				3
 #define YELLOW_COLOR			4
+#define WTF_COLOR				5
+#define BLACK_COLOR				6
 
 #define BLUE_HUE				0.365
 #define RED_HUE					0.975
@@ -121,8 +125,8 @@ RgbColor getColorAnalog();
 
 bool checkSameHue(float, float);
 int currentFloorColor(HsbColor, bool);
-string currentFloorColorAnalog(HsbColor);
 HsbColor RGBtoHSB(RgbColor );
+int readAndGetColor(bool);
 
 
 /*****************************************************************************
@@ -136,5 +140,11 @@ void encodeurGaucheTest();
 void encodeurDroitTest();
 void testCouleur();
 void testInfrarouge();
-
+void testDistance();
+/*****************************************************************************
+ * ***************************************************************************
+ * CONTRASTE
+ * ***************************************************************************
+ *****************************************************************************/
+int getContraste();
 #endif

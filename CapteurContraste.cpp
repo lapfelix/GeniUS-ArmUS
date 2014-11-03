@@ -59,3 +59,12 @@ void comparerAnalog()
 		//Faire reculer le robot! (il a dépasser les bonnes couleurs)
 	}
 }
+
+int getContraste()
+{
+	int Dmoy = 0;
+
+	Dmoy = (ANALOG_Read(1) + ANALOG_Read(2))/2;
+
+	return Dmoy;
+}

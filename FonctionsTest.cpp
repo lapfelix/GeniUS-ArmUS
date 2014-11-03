@@ -78,6 +78,7 @@ void testCouleur()
 	//initialiser le capteur cest important quand on s'appelle robot 43
 	if(estRobot43)
 		initCapteurI2C();
+
 	//ofstream fichier;
 	//fichier.open("couleur.txt");
 	while(1)
@@ -110,6 +111,8 @@ void testCouleur()
 						LCD_Printf("JAUNE");break;
 					case 5:
 						LCD_Printf("WTF");break;
+					case 6:
+						LCD_Printf("Noir");break;
 					default:
 						LCD_Printf("default");break;
 				}
@@ -144,4 +147,39 @@ void testInfrarouge()
 }
 
 
+void testDistance(){
+	LCD_Printf("lol");
+	bool IRgauche, IRdroite;
+	while(1){
 
+	switch(IR_Detect(IR_FRONT))
+	      {
+	          case 0: IRgauche=false;IRdroite=false;break;
+	          case 1: IRdroite=true;IRgauche=false;break;
+	          case 2: IRdroite=false;IRgauche=true;break;
+	          case 3: IRdroite=true;IRgauche=true;break;
+	      }
+	      //----------------------------------------------
+	      //tourne a droite si obstacle a gauche
+	      if(IRgauche==false && IRdroite == false)
+	      {
+	    	  LCD_ClearAndPrint("Rien");
+
+	      }
+	      else if(IRgauche==true && IRdroite == false)
+	      {
+	    	  LCD_ClearAndPrint("Gauche");
+
+	      }
+	      else if(IRdroite==true && IRgauche == false)
+	      {
+	    	  LCD_ClearAndPrint("Droite");
+
+	      }
+	      else // 2 d»tecteurs activ»s
+	      {
+	    	  LCD_ClearAndPrint("Deux");
+
+	      }
+	}
+}
