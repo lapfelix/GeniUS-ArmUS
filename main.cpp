@@ -5,12 +5,15 @@
  *      Author: DaeSoluS
  */
 #include "Robot.h"
+#include <libarmus.h>
+
 int main()
 {
 	bool laDerniereCarte = false;
 	Robot unRobot(10);
-	//unRobot.avancer(laDerniereCarte);
-	//unRobot.tourner(90);
+	AUDIO_SetVolume(80);
+	unsigned int music, state = 0;
+
 	while(1)
 	{
 		unRobot.lireNfc();
@@ -18,6 +21,3 @@ int main()
 
 	return 0;
 }
-
-
-

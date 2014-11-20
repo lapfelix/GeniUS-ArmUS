@@ -25,7 +25,7 @@ public:
 	NFC();
 	int interpreteDigitalRead();
 	bool isNfcReading();
-	void scanTag();
+	int scanTag();
 };
 
 #endif /* NFC_H_ */

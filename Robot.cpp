@@ -11,7 +11,14 @@ Robot::Robot(int transitions)
 
 void Robot::lireNfc()
 {
-	nfc.scanTag();
+	int tagNumber = nfc.scanTag();
+	if (tagNumber!=0){
+		//string fileName = "son%i.wav",tagNumber; "son%i.wav",tagNumber
+		char fileName[50];
+		sprintf(fileName, "son%i.wav", tagNumber);
+		AUDIO_PlayFile(fileName);
+		THREAD_MSleep(1500);
+	}
 }
 
 void Robot::avancer(bool derniereCarte)
