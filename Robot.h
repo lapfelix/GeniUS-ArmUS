@@ -10,7 +10,7 @@ class Robot
 private:
 	int transitionsGauche;
 	int transitionsDroite;
-	//NFC nfc;
+	NFC nfc;
 	//Capteur unCapteur;
 public:
 	Robot(int);

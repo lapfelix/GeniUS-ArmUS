@@ -4,13 +4,14 @@
 
 Robot::Robot(int transitions)
 {
+	LCD_ClearAndPrint("Debut");
 	this->transitionsGauche = transitions;
 	this->transitionsDroite = transitions;
 }
 
 void Robot::lireNfc()
 {
-	//nfc.test();
+	nfc.scanTag();
 }
 
 void Robot::avancer(bool derniereCarte)

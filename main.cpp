@@ -7,14 +7,15 @@
 #include "Robot.h"
 int main()
 {
-	bool laDerniereCarte = false; //Exemple de condition d arret
+	bool laDerniereCarte = false;
 	Robot unRobot(10);
-	unRobot.avancer(laDerniereCarte);
-	unRobot.tourner(90);
-	/*
-	while(1){
-	unRobot.lireNfc();
-	}*/
+	//unRobot.avancer(laDerniereCarte);
+	//unRobot.tourner(90);
+	while(1)
+	{
+		unRobot.lireNfc();
+	}
+
 	return 0;
 }
 
