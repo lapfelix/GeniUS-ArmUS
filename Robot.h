@@ -11,6 +11,7 @@ private:
 	int transitionsGauche;
 	int transitionsDroite;
 	NFC nfc;
+	void lireSon(char*);
 	//Capteur unCapteur;
 public:
 	Robot(int);

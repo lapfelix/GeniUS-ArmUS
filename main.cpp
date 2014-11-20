@@ -14,10 +14,10 @@ int main()
 	AUDIO_SetVolume(80);
 	unsigned int music, state = 0;
 
-	while(1)
-	{
+	//while(1)
+	//{
 		unRobot.lireNfc();
-	}
+	//}
 
 	return 0;
 }

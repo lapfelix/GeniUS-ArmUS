@@ -11,13 +11,18 @@ Robot::Robot(int transitions)
 
 void Robot::lireNfc()
 {
-	int tagNumber = nfc.scanTag();
-	if (tagNumber!=0){
-		//string fileName = "son%i.wav",tagNumber; "son%i.wav",tagNumber
-		char fileName[50];
-		sprintf(fileName, "son%i.wav", tagNumber);
-		AUDIO_PlayFile(fileName);
-		THREAD_MSleep(1500);
+	int tagNumber, lastTag = -1;
+	while(true)
+	{
+		tagNumber = nfc.scanTag();
+
+		if (tagNumber!=0 && tagNumber != lastTag){
+			lastTag = tagNumber;
+			//string fileName = "son%i.wav",tagNumber; "son%i.wav",tagNumber
+			char fileName[50];
+			sprintf(fileName, "son%i.wav", tagNumber);
+			lireSon(fileName);
+		}
 	}
 }
 
@@ -75,8 +80,11 @@ void Robot::tourner(int angle)
 	}
 }
 
-
-
+void Robot::lireSon(char fileName[50]){
+	int stream = AUDIO_PlayFile(fileName);
+	while(!AUDIO_IsPlaybackDone(stream))
+		THREAD_MSleep(100);
+}
 
 
 
