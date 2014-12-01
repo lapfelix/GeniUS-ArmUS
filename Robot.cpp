@@ -7,6 +7,7 @@ Robot::Robot(int transitions)
 	LCD_ClearAndPrint("Debut");
 	this->transitionsGauche = transitions;
 	this->transitionsDroite = transitions;
+	this->bouton = 0;
 }
 
 int Robot::lireNfc()
@@ -71,6 +72,36 @@ void Robot::tourner(int angle)
 
 
 
+
+int Robot::getCurrentButton()
+{
+	return this->bouton;
+}
+
+
+
+void Robot::setButtonPress()
+{
+	this->bouton=0;
+
+	while(this->bouton == 0 || this->bouton == 7)
+	{
+		if(DIGITALIO_Read(21)) //Facile
+			bouton = 1;
+		else
+			if(DIGITALIO_Read(22)) //Moyen
+				bouton = 2;
+			else
+				if(DIGITALIO_Read(23)) //Difficile
+					bouton = 3;
+				else
+					if(DIGITALIO_Read(24)) //Instructions
+						bouton = 4;
+	}
+
+
+
+}
 
 
 
