@@ -69,10 +69,6 @@ void Robot::tourner(int angle)
 	}
 }
 
-
-
-
-
 int Robot::getCurrentButton()
 {
 	return this->bouton;
@@ -98,9 +94,6 @@ void Robot::setButtonPress()
 					if(DIGITALIO_Read(24)) //Instructions
 						bouton = 4;
 	}
-
-
-
 }
 
 
