@@ -5,20 +5,22 @@
  *      Author: DaeSoluS
  */
 #include "NFC.h"
+#include "Jeu.h"
 class Robot
 {
 private:
 	int transitionsGauche;
 	int transitionsDroite;
 	NFC nfc;
-	void lireSon(char*);
+	Jeu jeu();
+
 	//Capteur unCapteur;
 public:
 	Robot(int);
 	void avancer(bool);
 	void tourner(int);
 	int PID(int,int,int,int);
-	void lireNfc();
+	int lireNfc();
 };
 
 

@@ -5,19 +5,22 @@
  *      Author: DaeSoluS
  */
 #include "Robot.h"
-#include <libarmus.h>
-
 int main()
 {
 	bool laDerniereCarte = false;
-	Robot unRobot(10);
-	AUDIO_SetVolume(80);
-	unsigned int music, state = 0;
+	//Robot unRobot(10);
+	int niveau = 1;//A changer pour la lecture des boutons
 
-	//while(1)
-	//{
-		unRobot.lireNfc();
-	//}
-
+	Jeu jeu(niveau); //A arranger
+	while(1)
+	{
+		int nfc = 1;
+		//if(unRobot.lireNfc()!=0)
+			//jeu.jouer(unRobot.lireNfc());
+		jeu.jouer(nfc);
+	}
 	return 0;
 }
+
+
+

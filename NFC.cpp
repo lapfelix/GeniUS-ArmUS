@@ -20,10 +20,9 @@ int NFC::scanTag()
 
 	if(isNfcReading())
 	{
-		return interpreteDigitalRead();
-	}else{
-		return 0;
+		return  interpreteDigitalRead();
 	}
+	return 0;
 }
 
 bool NFC::isNfcReading()
