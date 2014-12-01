@@ -10,6 +10,8 @@ Robot::Robot(int transitions)
 	this->bouton = 0;
 }
 
+//allo pier-luc
+
 int Robot::lireNfc()
 {
 	return nfc.scanTag();
