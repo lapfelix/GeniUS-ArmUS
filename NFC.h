@@ -21,6 +21,7 @@ private:
 	int arduinoNFCPin2;
 	int arduinoNFCPin3;
 	int arduinoNFCPin4;
+	int tag;
 public:
 	NFC();
 	int interpreteDigitalRead();

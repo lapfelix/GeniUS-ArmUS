@@ -9,18 +9,19 @@ NFC::NFC()
 	this->arduinoNFCPin2 = 0;
 	this->arduinoNFCPin3 = 0;
 	this->arduinoNFCPin4 = 0;
+	this->tag = 0;
 }
 
 int NFC::scanTag()
 {
+	THREAD_MSleep(100);
 	arduinoNFCPin1 = DIGITALIO_Read(NFCPIN1); //Pin 7 sur arduino, commence a droite (ex: 0001) 1=> pin7
 	arduinoNFCPin2 = DIGITALIO_Read(NFCPIN2); //Pin 6 sur arduino
 	arduinoNFCPin3 = DIGITALIO_Read(NFCPIN3); //Pin 5 sur arduino
 	arduinoNFCPin4 = DIGITALIO_Read(NFCPIN4); //Pin 4 sur arduino
-
 	if(isNfcReading())
 	{
-		return  interpreteDigitalRead();
+		return interpreteDigitalRead();
 	}
 	return 0;
 }
@@ -30,12 +31,10 @@ bool NFC::isNfcReading()
 	return (this->arduinoNFCPin1==0 && this->arduinoNFCPin2==0 && this->arduinoNFCPin3==0 && this->arduinoNFCPin4==0) == 0;
 }
 
-
-
 int NFC::interpreteDigitalRead()
 {
 	int nombreConverti = 0;
-	int exposant = 0;
+	int base = 1;
 	int repetition = 0;
 	int nombreBinaire = 0;
 	int resultat = 0;
@@ -45,14 +44,13 @@ int NFC::interpreteDigitalRead()
 	nombreBinaire += arduinoNFCPin3 ? 100 : 0;
 	nombreBinaire += arduinoNFCPin4 ? 1000 : 0;
 
-	do
+	while(nombreBinaire > 0)
 	{
 		//Conversion du nombre en decimal
-		nombreConverti = nombreBinaire % 10;
-		resultat += nombreConverti * (int)(pow((double) 2, exposant));
+		nombreConverti = (nombreBinaire % 10) * base;
+		resultat += nombreConverti;
+		base *= 2;
 		nombreBinaire = nombreBinaire / 10;
-		exposant++;
-
-	}	while(nombreBinaire != 0);
+	}
 	return resultat;
 }

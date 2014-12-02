@@ -7,9 +7,11 @@
 
 #ifndef JEU_H_
 #define JEU_H_
-using namespace std;
-#include <string>
+
+#include <string.h>
 #include <map>
+#include <vector>
+using namespace std;
 class Jeu
 {
 private:
@@ -24,23 +26,29 @@ enum planetes
 	URANUS =	7,
 	NEPTUNE =	8
 };
-
+struct Planete
+{
+	int* ordre;
+	char* question;
+};
 static const  int NOMBRECARTES = 8;
 int niveau;
 int caseRendu;
 int pointage;
-string question;
-
+Planete planete;
+map<int,char*> questions;
 public:
 	Jeu(int);
 	int* niveauFacile();
 	int* niveauMoyen();
-	void niveauDifficile();
+	int* niveauDifficile();
 	void jouer(int);
 	int lirePointage();
 	int lireCaseRendu();
-	string lireQuestion();
-	int random();
+	char* lireQuestion();
+	int random(int,vector<int> &listeNombre);
+	map<int,char*> questionsDifficile();
+	void initJeu();
 };
 
 

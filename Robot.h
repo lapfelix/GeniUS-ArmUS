@@ -13,18 +13,17 @@ private:
 	int transitionsDroite;
 	int bouton;
 	NFC nfc;
-	Jeu jeu();
 
 	//Capteur unCapteur;
 public:
 	Robot(int);
 	void avancer(bool);
 	void tourner(int);
-	int PID(int,int,int,int);
+	int PID(int,int,int,int,float);
 	int lireNfc();
 	void setButtonPress();//Loop qui capte le bouton qui est appuyé
 	int getCurrentButton();//Retourne la valeur "bouton" du bouton qui a été appuyé
-
+	void correctionLigne(float&,float&,int&,int&);
 	void lireSon(char*);
 };
 
