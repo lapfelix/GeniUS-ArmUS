@@ -20,9 +20,12 @@ int main()
 	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 
 	//affaires de test
-	//test de couleur si bumper avant
-	if(DIGITALIO_Read(BMP_FRONT))
+	//test de couleur si bouton du haut
+	if(DIGITALIO_Read(14)){
+		LCD_Printf("\nTEST COULEURS\n");
 			testCouleur();
+	}
+
 	int lastNfcScan = 0;
 
 		unRobot.setButtonPress();

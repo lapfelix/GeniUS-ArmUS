@@ -5,7 +5,7 @@ void testCouleur()
 	//TODO: un 'if' qui prend la couleur avec le i2c ou analogue dependant du robot
 
 	//le robot 43 a une pin entre le digital 9 et le Vcc
-	bool estRobot43 = (DIGITALIO_Read(9) == 1);
+	bool estRobot43 = true;
 
 	//initialiser le capteur cest important quand on s'appelle robot 43
 	if(estRobot43)

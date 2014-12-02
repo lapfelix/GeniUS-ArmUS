@@ -200,13 +200,13 @@ RgbColor getColorAnalog()
 {
 	RgbColor readColors;
 
-	DIGITALIO_Write(9, 1);		// met la LED du senseur ON
+	DIGITALIO_Write(10, 1);		// met la LED du senseur ON
 	THREAD_MSleep (200);
 	readColors.r = (int)((float)ANALOG_Read(1) * 1.8);
 	readColors.g = (int)((float)ANALOG_Read(2) * 1.5);
 	readColors.b = (int)((float)ANALOG_Read(3) * 2);
 
-	DIGITALIO_Write(9, 0);		// met la LED du senseur OFF
+	DIGITALIO_Write(10, 0);		// met la LED du senseur OFF
 	//THREAD_MSleep (5);
 	return readColors;
 }
