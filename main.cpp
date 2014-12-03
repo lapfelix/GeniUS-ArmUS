@@ -22,16 +22,11 @@ Robot unRobot(10);	//10 étant les transitions (vitesse) du robot
 int main()
 {
 
-	while(true){
-
 	bool laDerniereCarte = false;
 	pthread_t thread_scan;//Thread du scanneur NFC
 	AUDIO_PlayFile("R2D2-bip-bop.wav");
 	unRobot.mAJdesLumieres(0,1,1,1);
 
-	//LCD_SetMonitorMode(MONITOR_OFF);
-	//LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
-	//LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 
 	//affaires de test
 	//test de couleur si bouton vert
@@ -50,12 +45,8 @@ int main()
 	//démarre le thread NFC
 	THREAD_Create(&thread_scan,&Robot::scanPointer,&unRobot);
 
-	//initialize i2c color reader
-	initCapteurI2C();
 
-	//set le volume du speaker
-
-
+	while(true){
 		//TODO: repenser ça
 		mainLoop();
 	}
@@ -71,7 +62,6 @@ void mainLoop(){
 	unRobot.setButtonPress();
 	THREAD_MSleep(1200);
 	Jeu jeu(unRobot.getCurrentButton());
-	//LCD_Printf("\n");
 	waitingToStartLoop();
 
 	THREAD_Create(&thread_avancer,&Robot::avancerPointer,&unRobot);
@@ -84,7 +74,6 @@ void mainLoop(){
 		{
 			AUDIO_PlayFile("R2D2-do.wav");
 			jeu.jouer(nfcResult);
-			//LCD_Printf("\n POINT: %i/8 CARTES: %i RESULT: %i",jeu.lirePointage(),jeu.lireCaseRendu(),nfcResult);
 			lastNfcScan = nfcResult;
 		}
 
@@ -93,39 +82,27 @@ void mainLoop(){
 		}
 	}
 
+	LCD_Printf("\nOKAY ON EST LÀ LOLOL");
+
 	//rendu ici on veut du blanc et ensuite du bleu, et on arrête
 	//waitUntilColor(WHITE_COLOR);
 	//waitUntilColor(BLUE_COLOR);
 
 	unRobot.shouldMoveForward = false;
-	if(jeu.lirePointage() != 8)
-	{
-		AUDIO_PlayFile("R2D2-Scream.wav");
-	}
-	//LCD_Printf("\nstop. rewind");
+	//THREAD_MSleep(1000);
 
-	THREAD_MSleep(1000);
+	//THREAD_Create(&thread_reculer,&Robot::reculerPointer,&unRobot);
 
-	THREAD_Create(&thread_reculer,&Robot::reculerPointer,&unRobot);
-
-	//LCD_Printf("\nJ'ATTEND du blanc 1.");
-	waitUntilColor(WHITE_COLOR);
-	//LCD_Printf("2.");
-	waitUntilColor(WHITE_COLOR);
-	//LCD_Printf("3.");
-	waitUntilColor(WHITE_COLOR);
-	//LCD_Printf("4.");
-	waitUntilColor(WHITE_COLOR);
-	//LCD_Printf("\nJ'ATTEND du vert");
-	waitUntilColor(GREEN_COLOR);
+	jeu.lirePointage();
+	//while(unRobot.getCurrentButton() != 14)
+	//{
+		//wait
+	//}
 
 	unRobot.shouldMoveBackwards = false;
-
-	//THREAD_Destroy(&thread_avancer);
 }
 
 void waitingToStartLoop(){
-	//LCD_Printf("\nJ'ATTEND LE BOUTON BLEU");
 
 	int centreActif = 0; //Seulement le dÈtecteur du centre voit la ligne si centreActif = 1
 
@@ -147,12 +124,13 @@ void waitingToStartLoop(){
 
 		if(DIGITALIO_Read(13)==0)
 		{//Si le bouton n'est pas activé
-			if(centreActif==1 && readAndGetColor() == GREEN_COLOR){
+			if(centreActif==1){
 				DIGITALIO_Write(15,1);
 				//unRobot.mAJdesLumieres(1,0,0,0);
 
 		}else{
 				DIGITALIO_Write(15,0);
+
 				//unRobot.mAJdesLumieres(0,0,0,0);
 
 				//flash vite les lumières
@@ -161,7 +139,7 @@ void waitingToStartLoop(){
 		}
 		else
 		{//Si le bouton est activé
-			if(centreActif==1 && readAndGetColor() == GREEN_COLOR)//Et si le robot est bien alignee
+			if(centreActif==1)//Et si le robot est bien alignee
 			{
 				DIGITALIO_Write(15,0);
 				pretAContinuer=true;
@@ -173,12 +151,4 @@ void waitingToStartLoop(){
 	THREAD_MSleep(1000);
 }
 
-void waitUntilColor(int color){
-	while(readAndGetColor()!=color){
-		//LCD_Printf("%i",readAndGetColor());
-
-		//THREAD_MSleep(stepTime); //on sleep 50 ms parce qu'on est pas fou malade mental
-		//currentTime+=stepTime;
-	}
-}
 

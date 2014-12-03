@@ -9,9 +9,6 @@
 class Robot
 {
 private:
-
-	int transitionsGauche;
-	int transitionsDroite;
 	int bouton;
 	NFC nfc;
 	int lastScan;
@@ -36,6 +33,7 @@ public:
 	void *avancerAvecLaLigne(void);
 	void *reculerAvecLaLigne(void);
 	void stopMotors();
+	void setVitesse(int,int);
 	bool shouldMoveForward;
 	bool shouldMoveBackwards;
 };

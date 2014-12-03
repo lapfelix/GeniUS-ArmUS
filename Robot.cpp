@@ -5,16 +5,15 @@
 Robot::Robot(int transitions)
 {
 	AUDIO_SetVolume(90);
+
 	LCD_ClearAndPrint("Debut");
-	this->transitionsGauche = transitions;
-	this->transitionsDroite = transitions;
 	this->shouldMoveForward = false;
 	this->shouldMoveBackwards = false;
 	this->bouton = 0;
 	this->lastScan = 0;
-	//LCD_SetMonitorMode(LCD_ONLY);
-	//LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
-	//LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
+	LCD_SetMonitorMode(MONITOR_OFF);
+	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
+	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 }
 
 
@@ -98,41 +97,7 @@ void *Robot::avancerAvecLaLigne(void)
 
 		return 0;
 }
-void Robot::avancer()
-{
-	int distanceVoulueGauche = 0;
-	int distanceVoulueDroite = 0;
-	int distanceMoteurDroit = 0;
-	int distanceMoteurGauche= 0;
-	float ligneCorrectionDroite =0;
-	float ligneCorrectionGauche =0;
-	int ligneDernierePosition = 2;//LC
-	int lignePositionActuelle =0;
-	const int TEMPS = 250;//msecondes
 
-	//Condition future: Avancer jusqua la derniere carte ou une autre condition.
-
-	while(lireScan() == 0)
-	{
-		//LCD_Printf("SCAN: %i",lireScan());
-		THREAD_MSleep(TEMPS);
-		int lectureVitesseDroite = ENCODER_Read(ENCODER_RIGHT);
-		int lectureVitesseGauche = ENCODER_Read(ENCODER_LEFT);
-		distanceVoulueGauche += this->transitionsGauche;
-		distanceVoulueDroite += this->transitionsDroite;
-		distanceMoteurDroit += lectureVitesseDroite;
-		distanceMoteurGauche += lectureVitesseGauche;
-
-		correctionLigne(ligneCorrectionDroite,ligneCorrectionGauche,ligneDernierePosition,lignePositionActuelle);
-		int vitesseMoteurDroit = PID(lectureVitesseDroite,distanceMoteurDroit,distanceVoulueDroite,this->transitionsDroite,ligneCorrectionDroite);
-		int vitesseMoteurGauche = PID(lectureVitesseDroite,distanceMoteurGauche,distanceVoulueGauche,this->transitionsGauche,lectureVitesseGauche);
-
-		MOTOR_SetSpeed(7,vitesseMoteurGauche);
-		MOTOR_SetSpeed(8,vitesseMoteurDroit);
-	}
-	MOTOR_SetSpeed(7,0);
-	MOTOR_SetSpeed(8,0);
-}
 
 void *Robot::reculerPointer(void *context)
 {
@@ -143,7 +108,7 @@ void *Robot::reculerAvecLaLigne(void)
 {
 	Robot::shouldMoveBackwards = true;
 
-	const int vitesseHigh = -60, vitesseLow = -40;
+	const int vitesseHigh = -60, vitesseLow = -80;
 	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
 	const float correctionRoues = 30; // transitions / TEMPS
 	int lignePositionActuelle = 0, ligneDernierePosition = 0;

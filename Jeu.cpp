@@ -118,9 +118,22 @@ int Jeu::lireCaseRendu()
 
 
 //A faire plus tard
-int Jeu::lirePointage()
+void Jeu::lirePointage()
 {
-	return this->pointage;
+	if(pointage!=8)
+		AUDIO_PlayFile("R2D2-Scream.wav");
+	switch(this->pointage)
+	{
+		case 1:LCD_PrintBmp("1sur8.bmp");break;
+		case 2:LCD_PrintBmp("2sur8.bmp");break;
+		case 3:LCD_PrintBmp("3sur8.bmp");break;
+		case 4:LCD_PrintBmp("4sur8.bmp");break;
+		case 5:LCD_PrintBmp("5sur8.bmp");break;
+		case 6:LCD_PrintBmp("6sur8.bmp");break;
+		case 7:LCD_PrintBmp("7sur8.bmp");break;
+		case 8:LCD_PrintBmp("8sur8.bmp");break;
+		default:LCD_PrintBmp("0sur8.bmp");break;
+	}
 }
 
 int Jeu::random(int max,vector<int> &listeNombre)

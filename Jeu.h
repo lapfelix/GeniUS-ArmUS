@@ -43,7 +43,7 @@ public:
 	int* niveauMoyen();
 	int* niveauDifficile();
 	void jouer(int);
-	int lirePointage();
+	void lirePointage();
 	int lireCaseRendu();
 	char* lireQuestion();
 	int random(int,vector<int> &listeNombre);

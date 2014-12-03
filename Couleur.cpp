@@ -20,7 +20,7 @@ int readAndGetColor(){
 	//step 2
 	HsbColor colorsHSB = RGBtoHSB(readColor);
 	//LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
-	//LCD_Printf("\nCurrentCOlor: %i",currentFloorColor(colorsHSB,true));
+	LCD_Printf("\nCurrentCOlor: %i",currentFloorColor(colorsHSB,true));
 	return currentFloorColor(colorsHSB,true);
 
 }
