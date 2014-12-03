@@ -28,13 +28,11 @@ using namespace std;
 
 #define BLUE_HUE				0.365
 #define RED_HUE					0.975
-#define GREEN_HUE				0.530
+#define GREEN_HUE				0.793
 #define YELLOW_HUE				0.870
-
-
 
 bool checkSameHue(float, float);
 int currentFloorColor(HsbColor, bool);
 HsbColor RGBtoHSB(RgbColor );
-int readAndGetColor(bool);
+int readAndGetColor();
 #endif

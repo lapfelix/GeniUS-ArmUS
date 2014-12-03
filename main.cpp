@@ -5,27 +5,36 @@
  *      Author: DaeSoluS
  */
 #include "Robot.h"
-//#include "Tests.h"
+#include "Tests.h"
 #include <libarmus.h>
 #include "Jeu.h"
+#include "LogiqueJeu.h"
+
 using namespace std;
 
 int main()
 {
 	bool laDerniereCarte = false;
-	Robot unRobot(10);
+	pthread_t thread_scan;//Thread du scanneur NFC
+	Robot unRobot(10);	//10 étant les transitions (vitesse) du robot
 
-	LCD_SetMonitorMode(MONITOR_OFF);
-	//LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
-	//LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
+	unRobot.mAJdesLumieres(0,1,1,1);
+
+	LCD_SetMonitorMode(LCD_ONLY);
+	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
+	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 
 	//affaires de test
-	//test de couleur si bouton du haut
+	//test de couleur si bouton vert
 	if(DIGITALIO_Read(14)){
 		LCD_Printf("\nTEST COULEURS\n");
-		//	testCouleur();
+			testCouleur();
 	}
 
+	//test de entrees sorties si bouton orange
+		if(DIGITALIO_Read(15)){
+			LCD_Printf("\nTEST COULEURS\n");
+				Test_Des_Entrees_Et_Sorties();
 ///////////////////////////////////////////////////////////////////////////////
 	//Comment lire un fichier ben relaxe
 LCD_ClearAndPrint("Lecture audio");
@@ -76,21 +85,30 @@ LCD_ClearAndPrint("Lecture audio");
 
 	int lastNfcScan = 0;
 
-		unRobot.setButtonPress();
+	int lastPlanet = 0;
+	unRobot.setButtonPress();
 
-		Jeu jeu(unRobot.getCurrentButton());
-		LCD_Printf("\n");
-		LCD_Printf(jeu.lireQuestion());
-		while(1)
+	Jeu jeu(unRobot.getCurrentButton());
+	LCD_Printf("\n");
+	LCD_Printf(jeu.lireQuestion());
+
+	THREAD_Create(&thread_scan,&Robot::scanPointer,&unRobot);
+
+	startGame();
+
+	//main game loop
+	while(1)
+	{
+		//vérifie si le robot est sur du vert
+		if(readAndGetColor() && unRobot.getCurrentButton() == BOUTON_BLEU){{
+			unRobot.avancer();
+		}
+		int currentPlanet = unRobot.lireScan();
+		if(currentPlanet != 0 && currentPlanet != lastPlanet)
 		{
-			int nfcResult = unRobot.lireNfc();
-			if(nfcResult != 0 && nfcResult != lastNfcScan)
-			{
-				//unRobot.avancer(unRobot.lireNfc());
-				jeu.jouer(nfcResult);
-				LCD_Printf("\n POINT: %i/8",jeu.lirePointage());
-				lastNfcScan = nfcResult;
-			}
+			jeu.jouer(currentPlanet);
+			LCD_Printf("\n POINT: %i/8",jeu.lirePointage());
+			lastPlanet = currentPlanet;
 		}
 	return 0;
 }

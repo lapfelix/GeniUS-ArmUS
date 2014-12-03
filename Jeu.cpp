@@ -132,10 +132,3 @@ int Jeu::random(int max,vector<int> &listeNombre)
 	listeNombre.erase(listeNombre.begin() + random);
 	return result;
 }
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@
 
 float hues[4] = {BLUE_HUE,RED_HUE,GREEN_HUE,YELLOW_HUE};
 
-int readAndGetColor(bool estRobot43){
+int readAndGetColor(){
 
 	RgbColor readColor;
 
@@ -87,7 +87,8 @@ HsbColor RGBtoHSB(RgbColor colorsIntRGB)
 {
 	//chaque channel du rgb d'input est un int de 0 à 255 (en theorie)
 	//ici on le convertit en float de 0 à 1
-	//TODO: ici j'inverse VOLONTAIREMENT le bleu et le vert. à arranger. ou pas. whatever. notre cercle des couleurs est inversé mais ca change rien
+	//ici j'inverse VOLONTAIREMENT le bleu et le vert. à arranger. ou pas. whatever. notre cercle des couleurs est inversé mais ca change rien
+
     float colorsRGB[3] = {colorsIntRGB.r/255.f, colorsIntRGB.b/255.f, colorsIntRGB.g/255.f};
     HsbColor colorsHSB;
     float r = colorsRGB[0], g = colorsRGB[1], b = colorsRGB[2];
