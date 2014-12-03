@@ -8,30 +8,71 @@ Robot::Robot(int transitions)
 	this->transitionsGauche = transitions;
 	this->transitionsDroite = transitions;
 	this->bouton = 0;
-	this->lastScan = 0;
-	LCD_SetMonitorMode(LCD_ONLY);
-	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
-	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 }
 
+//allo pier-luc
 
-void *Robot::scan(void)
+int Robot::lireNfc()
 {
-
-	nfc.scanTag();
-	return 0;
+	return nfc.scanTag();
 }
-void *Robot::scanPointer(void *context)
+
+
+void Robot::avancerAvecLaLigne(bool &derniereCarte)
 {
-	return ((Robot *)context)->scan();
+	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
+		const float correctionRoues = 30; // transitions / TEMPS
+int lignePositionActuelle = 0, ligneDernierePosition = 0;
+		while(!derniereCarte)
+			{
+		// Lecture du suiveur de ligne
+		lignePositionActuelle = 0;
+		if(ANALOG_Read(1)< 750) lignePositionActuelle += LG; // Gauche
+		if(ANALOG_Read(2)< 750)lignePositionActuelle += LC; // Centre
+		if(ANALOG_Read(3)< 750)lignePositionActuelle += LD; // Droite
+
+		// Analyse de la lecture du suiveur de ligne
+
+		if(lignePositionActuelle==LC)
+		{
+			if(ligneDernierePosition==LG || ligneDernierePosition ==LGC)
+			{//Était trop à droite, correction..
+				MOTOR_SetSpeed(7,60);
+				MOTOR_SetSpeed(8,40);
+			}
+			else if(lignePositionActuelle==LD || lignePositionActuelle ==LDC)
+			{//Était trop à gauche, correction..
+				MOTOR_SetSpeed(7,40);
+				MOTOR_SetSpeed(8,60);
+			}
+			else
+			{//Était centre, reste centre
+				MOTOR_SetSpeed(7,60);
+				MOTOR_SetSpeed(8,60);
+			}
+		}
+		else if(lignePositionActuelle==LG || lignePositionActuelle ==LGC) // si LG c'est que robot tend vers la droite
+		{//Est trop à droite
+			MOTOR_SetSpeed(7,40);
+			MOTOR_SetSpeed(8,60);
+		}
+		else if (lignePositionActuelle==LD || lignePositionActuelle ==LDC) // si LD c'est que robot tend vers la gauche
+		{//Est trop à gauche
+			MOTOR_SetSpeed(7,60);
+			MOTOR_SetSpeed(8,40);
+		}
+		else
+		{//Si autre chose, juste avancer
+			MOTOR_SetSpeed(7,60);
+			MOTOR_SetSpeed(8,60);
+		}
+		ligneDernierePosition = lignePositionActuelle;
+	}
 }
 
-int Robot::lireScan()
-{
-	return nfc.lireTag();
-}
 
-void Robot::avancer()
+
+void Robot::avancer(bool &derniereCarte)
 {
 	int distanceVoulueGauche = 0;
 	int distanceVoulueDroite = 0;
@@ -42,38 +83,52 @@ void Robot::avancer()
 	int ligneDernierePosition = 2;//LC
 	int lignePositionActuelle =0;
 	const int TEMPS = 250;//msecondes
+	int vitesseMoteurDroit;
+	int vitesseMoteurGauche;
+	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
+
 
 	//Condition future: Avancer jusqua la derniere carte ou une autre condition.
-
-	while(lireScan() == 0)
+	while(!derniereCarte)
 	{
-		LCD_Printf("SCAN: %i",lireScan());
+		if(ANALOG_Read(1)< 750) lignePositionActuelle += LG; // Gauche
+		if(ANALOG_Read(2)< 750)lignePositionActuelle += LC; // Centre
+		if(ANALOG_Read(3)< 750)lignePositionActuelle += LD; // Droite
+		correctionLigne(ligneCorrectionGauche, ligneCorrectionDroite, ligneDernierePosition, lignePositionActuelle);
 		THREAD_MSleep(TEMPS);
 		int lectureVitesseDroite = ENCODER_Read(ENCODER_RIGHT);
 		int lectureVitesseGauche = ENCODER_Read(ENCODER_LEFT);
+		if (lignePositionActuelle == LDC|| lignePositionActuelle == LD){
 		distanceVoulueGauche += this->transitionsGauche;
+		distanceMoteurGauche += lectureVitesseGauche;}
+		else
+			vitesseMoteurGauche=0;
+		if (lignePositionActuelle == LGC || lignePositionActuelle == LG){
 		distanceVoulueDroite += this->transitionsDroite;
-		distanceMoteurDroit += lectureVitesseDroite;
-		distanceMoteurGauche += lectureVitesseGauche;
+		distanceMoteurDroit += lectureVitesseDroite;}
+		else
+			vitesseMoteurDroit =0;
 
-		correctionLigne(ligneCorrectionDroite,ligneCorrectionGauche,ligneDernierePosition,lignePositionActuelle);
-		int vitesseMoteurDroit = PID(lectureVitesseDroite,distanceMoteurDroit,distanceVoulueDroite,this->transitionsDroite,ligneCorrectionDroite);
-		int vitesseMoteurGauche = PID(lectureVitesseDroite,distanceMoteurGauche,distanceVoulueGauche,this->transitionsGauche,lectureVitesseGauche);
+
+
+		if(lignePositionActuelle == LGC || lignePositionActuelle == LG){
+		vitesseMoteurDroit = PID(lectureVitesseDroite,distanceMoteurDroit,distanceVoulueDroite,this->transitionsDroite,ligneCorrectionDroite);}
+		if(lignePositionActuelle == LDC || lignePositionActuelle == LD){
+		vitesseMoteurGauche = PID(lectureVitesseGauche,distanceMoteurGauche,distanceVoulueGauche,this->transitionsGauche,lectureVitesseGauche);}
 
 		MOTOR_SetSpeed(7,vitesseMoteurGauche);
 		MOTOR_SetSpeed(8,vitesseMoteurDroit);
 	}
-	MOTOR_SetSpeed(7,0);
-	MOTOR_SetSpeed(8,0);
+	
 }
 void Robot::correctionLigne(float &ligneCorrectionDroite,float &ligneCorrectionGauche,int &ligneDernierePosition,int &lignePositionActuelle)
 {
 	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
-	const float correctionRoues = 5; // transitions / TEMPS
+	const float correctionRoues = 30; // transitions / TEMPS
 
 	// Lecture du suiveur de ligne
 	lignePositionActuelle = 0;
-	if(ANALOG_Read(1)<750) lignePositionActuelle += LG; // Gauche
+	if(ANALOG_Read(1)< 750) lignePositionActuelle += LG; // Gauche
 	if(ANALOG_Read(2)< 750)lignePositionActuelle += LC; // Centre
 	if(ANALOG_Read(3)< 750)lignePositionActuelle += LD; // Droite
 
@@ -122,7 +177,7 @@ int Robot::PID(int lecture,int distanceReel,int distanceIdeal,int transitions,fl
 	const float FC_VITESSE = 1;//facteur de correction de la vitesse
 	const float FC_DISTANCE = 0.5;//facteur de correction de la distance
 
-	return (int)(-FC_VITESSE*(float)(lecture-transitions)+facteurCorrection+30-FC_DISTANCE*(float)(distanceReel-distanceIdeal));
+	return (int)(-FC_VITESSE*(float)(lecture-transitions)-(FC_DISTANCE*(float)(distanceReel-distanceIdeal)));
 }
 
 
@@ -161,45 +216,22 @@ void Robot::setButtonPress()
 		{
 			bouton = 1;
 			LCD_Printf("\n Facile");
-			mAJdesLumieres(0,1,0,0);
 		}
 		else if(DIGITALIO_Read(15)) //Moyen
 		{
 			bouton = 2;
 			LCD_Printf("\n Moyen");
-			mAJdesLumieres(0,0,1,0);
 		}
 		else if(DIGITALIO_Read(16)) //Difficile
 		{
 			bouton = 3;
 			LCD_Printf("\n Difficile");
-			mAJdesLumieres(0,0,0,1);
 		}
 		else if(DIGITALIO_Read(13)) //Instructions
 			bouton = 4;
 	}
 }
 
-void Robot::mAJdesLumieres(bool bleu, bool vert, bool orange, bool rouge)
-{
-	if (bleu == true)
-		DIGITALIO_Write(11,1);
-	else
-		DIGITALIO_Write(11,0);
 
-	if (vert == true)
-		DIGITALIO_Write(12,1);
-	else
-		DIGITALIO_Write(12,0);
 
-	if (orange == true)
-		DIGITALIO_Write(13,1);
-	else
-		DIGITALIO_Write(13,0);
 
-	if (rouge == true)
-		DIGITALIO_Write(14,1);
-	else
-		DIGITALIO_Write(14,0);
-
-}
