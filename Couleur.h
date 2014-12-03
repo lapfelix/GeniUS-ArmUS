@@ -31,6 +31,8 @@ using namespace std;
 #define GREEN_HUE				0.793
 #define YELLOW_HUE				0.870
 
+
+
 bool checkSameHue(float, float);
 int currentFloorColor(HsbColor, bool);
 HsbColor RGBtoHSB(RgbColor );

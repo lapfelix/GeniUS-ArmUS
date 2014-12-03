@@ -14,14 +14,14 @@ int readAndGetColor(){
 		readColor = getColorI2C();
 	else
 		readColor = getColorAnalog();
-	LCD_Printf("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
+	//LCD_Printf("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
 
 	//fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
 	//step 2
 	HsbColor colorsHSB = RGBtoHSB(readColor);
-	LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
-
-	return currentFloorColor(colorsHSB,estRobot43);
+	//LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
+	//LCD_Printf("\nCurrentCOlor: %i",currentFloorColor(colorsHSB,true));
+	return currentFloorColor(colorsHSB,true);
 
 }
 
@@ -87,8 +87,7 @@ HsbColor RGBtoHSB(RgbColor colorsIntRGB)
 {
 	//chaque channel du rgb d'input est un int de 0 à 255 (en theorie)
 	//ici on le convertit en float de 0 à 1
-	//ici j'inverse VOLONTAIREMENT le bleu et le vert. à arranger. ou pas. whatever. notre cercle des couleurs est inversé mais ca change rien
-
+	//TODO: ici j'inverse VOLONTAIREMENT le bleu et le vert. à arranger. ou pas. whatever. notre cercle des couleurs est inversé mais ca change rien
     float colorsRGB[3] = {colorsIntRGB.r/255.f, colorsIntRGB.b/255.f, colorsIntRGB.g/255.f};
     HsbColor colorsHSB;
     float r = colorsRGB[0], g = colorsRGB[1], b = colorsRGB[2];

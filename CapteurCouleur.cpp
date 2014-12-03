@@ -169,10 +169,10 @@ int color_Init(int& dev_handle)
  */
 void initCapteurI2C()
 {
-	LCD_Printf("Init capteurCouleur");
+	//LCD_Printf("Init capteurCouleur");
 
 	//initialisation du capteur
-	LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
+	//LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
 
 	cap_SetValue(CAP_RED, 10);
 	cap_SetValue(CAP_GREEN, 10);

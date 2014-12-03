@@ -22,6 +22,7 @@ private:
 	int arduinoNFCPin3;
 	int arduinoNFCPin4;
 	int tag;
+	bool scanComplet;//Pour sassurer que le scan nfc est fait avant dobtenir la valeur
 public:
 	NFC();
 	int interpreteDigitalRead();

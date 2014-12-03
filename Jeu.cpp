@@ -15,9 +15,9 @@ Jeu::Jeu(int niveau)
 
 int* Jeu::niveauFacile()
 {
-	char question[] = "Placer les planetes allant de la plus proche du soleil a la plus eloignee";
-	planete.question = question;
-	//Ordre des planètes
+	AUDIO_PlayFile("questionFacile.wav");
+	LCD_PrintBmp("questionFacile.bmp");
+	//Ordre des planètess
 	int* ordrePlanete = new int[NOMBRECARTES];
 	for(int i = 1; i<= NOMBRECARTES;++i)
 		ordrePlanete[i-1] = i;
@@ -27,8 +27,8 @@ int* Jeu::niveauFacile()
 
 int* Jeu::niveauMoyen()
 {
-	char question[] = "Placer les planètes allant de la plus proche du soleil à la plus éloignée";
-	planete.question = question;
+	AUDIO_PlayFile("questionMoyenne.wav");
+	LCD_PrintBmp("questionMoyenne.bmp");
 	int* ordrePlanete = new int[NOMBRECARTES];
 	int i = 0;
 	ordrePlanete[i++] = MERCURE;
@@ -93,7 +93,7 @@ void Jeu::initJeu()
 		case 2:planete.ordre = niveauMoyen();break;
 		case 3:planete.ordre = niveauDifficile();
 			   planete.question = questions[1];
-			   LCD_Printf(planete.question);
+			   //LCD_Printf(planete.question);
 			   break;
 	}
 }
@@ -132,3 +132,10 @@ int Jeu::random(int max,vector<int> &listeNombre)
 	listeNombre.erase(listeNombre.begin() + random);
 	return result;
 }
+
+
+
+
+
+
+
