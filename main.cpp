@@ -16,22 +16,26 @@ int main()
 	pthread_t thread_scan;//Thread du scanneur NFC
 	Robot unRobot(10);	//10 étant les transitions (vitesse) du robot
 
-<<<<<<< HEAD
 
 	unRobot.mAJdesLumieres(0,1,1,1);
-=======
+
 	LCD_SetMonitorMode(LCD_ONLY);
 	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
 	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 
 	//affaires de test
-	//test de couleur si bouton du haut
+	//test de couleur si bouton vert
 	if(DIGITALIO_Read(14)){
 		LCD_Printf("\nTEST COULEURS\n");
 			testCouleur();
 	}
 
->>>>>>> origin/CRJ
+	//test de entrees sorties si bouton orange
+		if(DIGITALIO_Read(15)){
+			LCD_Printf("\nTEST COULEURS\n");
+				Test_Des_Entrees_Et_Sorties();
+		}
+
 	int lastNfcScan = 0;
 	unRobot.setButtonPress();
 

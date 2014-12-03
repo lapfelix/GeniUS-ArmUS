@@ -50,3 +50,72 @@ void testCouleur()
 				}
 	}
 }
+void Test_Des_Entrees_Et_Sorties()
+{
+    int NFC1=0;
+    int NFC2=0;
+    int NFC3=0;
+    int NFC4=0;
+    int PbBleu=0, PbVert=0, PbOrange=0, PbRouge=0;
+    int CompteurDeTemps=0;
+    int DlGauche, DlCentre, DlDroite;
+    unsigned int playback=0;
+    bool clignoter=false;
+    bool jouermusique=false;
+    AUDIO_SetVolume(100);
+    while(1)
+    {
+        if(DIGITALIO_Read(9)) 	NFC1=1;
+        else 					NFC1=0;
+        if(DIGITALIO_Read(10)) 	NFC2=1;
+        else 					NFC2=0;
+        if(DIGITALIO_Read(11)) 	NFC3=1;
+        else 					NFC3=0;
+        if(DIGITALIO_Read(12)) 	NFC4=1;
+        else 					NFC4=0;
+        if(DIGITALIO_Read(13)) 	PbBleu=1;
+        else 					PbBleu=0;
+        if(DIGITALIO_Read(14)) 	PbVert=1;
+        else 					PbVert=0;
+        if(DIGITALIO_Read(15)) 	PbOrange=1;
+        else 					PbOrange=0;
+        if(DIGITALIO_Read(16)) 	PbRouge=1;
+        else 					PbRouge=0;
+        // Suiveur de ligne
+        if(ANALOG_Read(1)>750) 	DlGauche=1;
+        else 					DlGauche=0;
+        if(ANALOG_Read(2)>750) 	DlCentre=1;
+        else 					DlCentre=0;
+        if(ANALOG_Read(3)>750) 	DlDroite=1;
+        else 					DlDroite=0;
+        
+        if (clignoter)	DIGITALIO_WriteByte(2,255);
+        else if (clignoter==0) DIGITALIO_WriteByte(2,0);
+        if (jouermusique == false)
+        {
+            playback = AUDIO_PlayFile("R2D2-hey-you.wav");
+            jouermusique = true;
+        }
+        if (AUDIO_IsPlaybackDone(playback))
+        {
+            jouermusique = false;
+        }
+        
+        
+        
+        THREAD_MSleep(250);
+        CompteurDeTemps++;
+        if (CompteurDeTemps>2)
+        {
+            clignoter = not clignoter;
+            CompteurDeTemps=0;
+        }
+        
+        LCD_ClearAndPrint("Valeurs NFC :[ %d], [ %d],[ %d],[ %d]", NFC1,NFC2,NFC3,NFC4);
+        LCD_Printf("Etat des 4 boutons :\n");
+        LCD_Printf(" bleu = %d - vert =%d - orange =%d - rouge =%d", PbBleu, PbVert, PbOrange, PbRouge);
+        LCD_Printf("G [%d]  C [%d]  D [%d]", DlGauche, DlCentre, DlDroite);
+    }
+}
+
+

@@ -13,6 +13,7 @@
 #include <libarmus.h>
 
 void testCouleur();
+void Test_Des_Entrees_Et_Sorties();
 
 #endif /* TESTS_H_ */
 
