@@ -12,29 +12,31 @@ using namespace std;
 int main()
 {
 	bool laDerniereCarte = false;
-	Robot unRobot(10);
+	pthread_t thread_scan;//Thread du scanneur NFC
+	Robot unRobot(10);	//10 étant les transitions (vitesse) du robot
 
-	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
-	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 
+	unRobot.mAJdesLumieres(0,1,1,1);
 	int lastNfcScan = 0;
+	unRobot.setButtonPress();
 
-		unRobot.setButtonPress();
+	Jeu jeu(unRobot.getCurrentButton());
+	LCD_Printf("\n");
+	LCD_Printf(jeu.lireQuestion());
 
-		Jeu jeu(unRobot.getCurrentButton());
-		LCD_Printf("\n");
-		LCD_Printf(jeu.lireQuestion());
-		while(1)
+	THREAD_Create(&thread_scan,&Robot::scanPointer,&unRobot);
+
+	while(1)
+	{
+		unRobot.avancer();
+		int nfcResult = unRobot.lireScan();
+		if(nfcResult != 0 && nfcResult != lastNfcScan)
 		{
-			int nfcResult = unRobot.lireNfc();
-			if(nfcResult != 0 && nfcResult != lastNfcScan)
-			{
-				//unRobot.avancer(unRobot.lireNfc());
-				jeu.jouer(nfcResult);
-				LCD_Printf("\n POINT: %i/8",jeu.lirePointage());
-				lastNfcScan = nfcResult;
-			}
+			jeu.jouer(nfcResult);
+			LCD_Printf("\n POINT: %i/8",jeu.lirePointage());
+			lastNfcScan = nfcResult;
 		}
+	}
 	return 0;
 }
 

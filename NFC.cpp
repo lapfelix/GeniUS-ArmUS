@@ -5,6 +5,7 @@
 
 NFC::NFC()
 {
+
 	this->arduinoNFCPin1 = 0;
 	this->arduinoNFCPin2 = 0;
 	this->arduinoNFCPin3 = 0;
@@ -12,13 +13,20 @@ NFC::NFC()
 	this->tag = 0;
 }
 
-int NFC::scanTag()
+void NFC::scanTag()
 {
-	THREAD_MSleep(100);
-	arduinoNFCPin1 = DIGITALIO_Read(NFCPIN1); //Pin 7 sur arduino, commence a droite (ex: 0001) 1=> pin7
-	arduinoNFCPin2 = DIGITALIO_Read(NFCPIN2); //Pin 6 sur arduino
-	arduinoNFCPin3 = DIGITALIO_Read(NFCPIN3); //Pin 5 sur arduino
-	arduinoNFCPin4 = DIGITALIO_Read(NFCPIN4); //Pin 4 sur arduino
+	while(1)
+	{
+		THREAD_MSleep(100);
+		arduinoNFCPin1 = DIGITALIO_Read(NFCPIN1); //Pin 7 sur arduino, commence a droite (ex: 0001) 1=> pin7
+		arduinoNFCPin2 = DIGITALIO_Read(NFCPIN2); //Pin 6 sur arduino
+		arduinoNFCPin3 = DIGITALIO_Read(NFCPIN3); //Pin 5 sur arduino
+		arduinoNFCPin4 = DIGITALIO_Read(NFCPIN4); //Pin 4 sur arduino
+	}
+}
+
+int NFC::lireTag()
+{
 	if(isNfcReading())
 	{
 		return interpreteDigitalRead();

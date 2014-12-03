@@ -15,7 +15,7 @@ Jeu::Jeu(int niveau)
 
 int* Jeu::niveauFacile()
 {
-	char question[] = "Placer les planètes allant de la plus proche du soleil à la plus éloignée";
+	char question[] = "Placer les planetes allant de la plus proche du soleil a la plus eloignee";
 	planete.question = question;
 	//Ordre des planètes
 	int* ordrePlanete = new int[NOMBRECARTES];

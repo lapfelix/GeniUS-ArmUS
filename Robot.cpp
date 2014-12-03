@@ -8,16 +8,30 @@ Robot::Robot(int transitions)
 	this->transitionsGauche = transitions;
 	this->transitionsDroite = transitions;
 	this->bouton = 0;
+	this->lastScan = 0;
+	LCD_SetMonitorMode(LCD_ONLY);
+	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
+	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
 }
 
-//allo pier-luc
 
-int Robot::lireNfc()
+void *Robot::scan(void)
 {
-	return nfc.scanTag();
+
+	nfc.scanTag();
+	return 0;
+}
+void *Robot::scanPointer(void *context)
+{
+	return ((Robot *)context)->scan();
 }
 
-void Robot::avancer(bool derniereCarte)
+int Robot::lireScan()
+{
+	return nfc.lireTag();
+}
+
+void Robot::avancer()
 {
 	int distanceVoulueGauche = 0;
 	int distanceVoulueDroite = 0;
@@ -30,8 +44,10 @@ void Robot::avancer(bool derniereCarte)
 	const int TEMPS = 250;//msecondes
 
 	//Condition future: Avancer jusqua la derniere carte ou une autre condition.
-	while(!derniereCarte)
+
+	while(lireScan() == 0)
 	{
+		LCD_Printf("SCAN: %i",lireScan());
 		THREAD_MSleep(TEMPS);
 		int lectureVitesseDroite = ENCODER_Read(ENCODER_RIGHT);
 		int lectureVitesseGauche = ENCODER_Read(ENCODER_LEFT);
@@ -47,6 +63,8 @@ void Robot::avancer(bool derniereCarte)
 		MOTOR_SetSpeed(7,vitesseMoteurGauche);
 		MOTOR_SetSpeed(8,vitesseMoteurDroit);
 	}
+	MOTOR_SetSpeed(7,0);
+	MOTOR_SetSpeed(8,0);
 }
 void Robot::correctionLigne(float &ligneCorrectionDroite,float &ligneCorrectionGauche,int &ligneDernierePosition,int &lignePositionActuelle)
 {
@@ -143,26 +161,45 @@ void Robot::setButtonPress()
 		{
 			bouton = 1;
 			LCD_Printf("\n Facile");
+			mAJdesLumieres(0,1,0,0);
 		}
 		else if(DIGITALIO_Read(15)) //Moyen
 		{
 			bouton = 2;
 			LCD_Printf("\n Moyen");
+			mAJdesLumieres(0,0,1,0);
 		}
 		else if(DIGITALIO_Read(16)) //Difficile
 		{
 			bouton = 3;
 			LCD_Printf("\n Difficile");
+			mAJdesLumieres(0,0,0,1);
 		}
 		else if(DIGITALIO_Read(13)) //Instructions
 			bouton = 4;
 	}
 }
 
+void Robot::mAJdesLumieres(bool bleu, bool vert, bool orange, bool rouge)
+{
+	if (bleu == true)
+		DIGITALIO_Write(11,1);
+	else
+		DIGITALIO_Write(11,0);
 
+	if (vert == true)
+		DIGITALIO_Write(12,1);
+	else
+		DIGITALIO_Write(12,0);
 
+	if (orange == true)
+		DIGITALIO_Write(13,1);
+	else
+		DIGITALIO_Write(13,0);
 
+	if (rouge == true)
+		DIGITALIO_Write(14,1);
+	else
+		DIGITALIO_Write(14,0);
 
-
-
-
+}
