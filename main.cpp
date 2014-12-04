@@ -56,7 +56,6 @@ int main()
 
 void mainLoop(){
 	pthread_t thread_avancer, thread_reculer;
-
 	int lastNfcScan = 0;
 
 	unRobot.setButtonPress();
