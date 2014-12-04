@@ -185,7 +185,6 @@ void CapteurCouleur::initCapteurI2C()
 	//LCD_Printf("Init capteurCouleur");
 
 	//initialisation du capteur
-	//LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
 	color_Init(adjd_dev);
 
 	cap_SetValue(CAP_RED, 10);

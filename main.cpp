@@ -41,7 +41,7 @@ int main()
 }
 
 void mainLoop(){
-	pthread_t thread_avancer, thread_reculer;
+	pthread_t thread_avancer, thread_reculer, thread_couleur;
 
 	int lastNfcScan = 0;
 
@@ -51,6 +51,7 @@ void mainLoop(){
 	waitingToStartLoop();
 
 	THREAD_Create(&thread_avancer,&Robot::avancerPointer,&unRobot);
+	THREAD_Create(&thread_couleur,&Robot::couleurPointer,&unRobot);
 
 	while(1)
 	{
@@ -58,7 +59,6 @@ void mainLoop(){
 
 		if(nfcResult != 0 && nfcResult != lastNfcScan)
 		{
-			AUDIO_PlayFile("R2D2-do.wav");
 			jeu.jouer(nfcResult);
 			lastNfcScan = nfcResult;
 		}
@@ -76,6 +76,14 @@ void mainLoop(){
 
 	//THREAD_MSleep(1000);
 	//THREAD_Create(&thread_reculer,&Robot::reculerPointer,&unRobot);
+
+	//unRobot.tourner180untilLine();
+
+	//THREAD_Create(&thread_avancer,&Robot::avancerPointer,&unRobot);
+
+	//waitUntilColor(GREEN_COLOR);
+
+	//unRobot.tourner180untilLine();
 
 	jeu.lirePointage();
 	unRobot.shouldMoveBackwards = false;
@@ -120,6 +128,10 @@ void waitingToStartLoop(){
 	THREAD_MSleep(1000);
 }
 
-void waitUntilColor(int couleur){
-	while(unRobot.)
+
+void waitUntilColor(int color){
+	while(unRobot.currentColor != color){
+		//wait
+
+	}
 }

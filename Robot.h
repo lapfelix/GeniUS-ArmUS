@@ -7,6 +7,7 @@
 #include "NFC.h"
 #include "Jeu.h" 
 #include "CapteurCouleur.h"
+#include "Couleur.h"
 
 class Robot
 {
@@ -26,6 +27,8 @@ public:
 	static void *scanPointer(void *context);
 	static void *avancerPointer(void *context);
 	static void *reculerPointer(void *context);
+	static void *couleurPointer(void *context);
+
 	int lireScan();
 	void setButtonPress();//Loop qui capte le bouton qui est appuyé
 	int getCurrentButton();//Retourne la valeur "bouton" du bouton qui a été appuyé
@@ -34,8 +37,10 @@ public:
 	void mAJdesLumieres(bool, bool , bool, bool);
 	void testCouleur();
 
-	void *couleurPointer(void *context);
 	void *scanCouleur(void);
+	void *colorLoop(void);
+
+	void tourner180untilLine();
 
 	//Fonction fait bien vite.
 	void *avancerAvecLaLigne(void);
@@ -44,6 +49,7 @@ public:
 	void setVitesse(int,int);
 	bool shouldMoveForward;
 	bool shouldMoveBackwards;
+	int currentColor;
 };
 
 

@@ -50,8 +50,8 @@ int* Jeu::niveauDifficile()
 	ordrePlanete[i++] = MARS;
 	ordrePlanete[i++] = VENUS;
 	ordrePlanete[i++] = TERRE;
-	ordrePlanete[i++] = NEPTUNE;
 	ordrePlanete[i++] = URANUS;
+	ordrePlanete[i++] = NEPTUNE;
 	ordrePlanete[i++] = SATURNE;
 	ordrePlanete[i++] = JUPITER;
 	return ordrePlanete;
@@ -69,7 +69,13 @@ void Jeu::initJeu()
 
 void Jeu::jouer(int carte)
 {
-	this->pointage += (carte == planete.ordre[caseRendu]) ? 1 : 0;
+	if((carte == planete.ordre[caseRendu])){
+
+		AUDIO_PlayFile("R2D2-do.wav");
+		this->pointage += 1;
+	}else{
+		AUDIO_PlayFile("wrong.wav");
+	}
 	this->caseRendu++;
 }
 
@@ -90,7 +96,7 @@ void Jeu::lirePointage()
 	if(pointage!=8)
 		AUDIO_PlayFile("R2D2-Scream.wav");
 	else
-		AUDIO_PlayFile("R2D2-Scream.wav");
+		AUDIO_PlayFile("R2D2-Wii.wav");
 	switch(this->pointage)
 	{
 		case 1:LCD_PrintBmp("1sur8.bmp");break;

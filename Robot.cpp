@@ -5,15 +5,17 @@
 Robot::Robot(int transitions)
 {
 	AUDIO_SetVolume(90);
-	capteurCouleur.initCapteurI2C();
+
 	LCD_ClearAndPrint("Debut");
 	this->shouldMoveForward = false;
 	this->shouldMoveBackwards = false;
 	this->bouton = 0;
 	this->lastScan = 0;
+	currentColor = -1;
 	LCD_SetMonitorMode(MONITOR_OFF);
 	LCD_ClearAndPrint("Bonjour, et Bienvenue! Je m'appelle R2D3\n\nVeuillez selectionner un niveau de difficulte:\n");
 	LCD_Printf("Facile : Vert\nMoyen : Jaune\nDifficile : Rouge\n");
+
 }
 
 
@@ -30,6 +32,7 @@ void *Robot::scanPointer(void *context)
 
 void *Robot::scanCouleur(void)
 {
+	capteurCouleur.initCapteurI2C();
 	return 0;
 }
 
@@ -52,7 +55,7 @@ void *Robot::avancerAvecLaLigne(void)
 {
 	Robot::shouldMoveForward = true;
 
-	const int vitesseHigh = 85, vitesseLow = 40;
+	const int vitesseHigh = 55, vitesseLow = 35;
 	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
 	const float correctionRoues = 30; // transitions / TEMPS
 	int lignePositionActuelle = 0, ligneDernierePosition = 0;
@@ -318,3 +321,38 @@ void Robot::mAJdesLumieres(bool bleu, bool vert, bool orange, bool rouge)
 		DIGITALIO_Write(14,0);
 
 }
+
+void Robot::tourner180untilLine()
+{
+	MOTOR_SetSpeed(7,65);
+	MOTOR_SetSpeed(8,-65);
+	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
+	int lignePositionActuelle = 0;
+		// Lecture du suiveur de ligne
+		lignePositionActuelle = 0;
+		if(ANALOG_Read(1)< 750) lignePositionActuelle += LG; // Gauche
+		if(ANALOG_Read(2)< 750)lignePositionActuelle += LC; // Centre
+		if(ANALOG_Read(3)< 750)lignePositionActuelle += LD; // Droite
+		// Analyse de la lecture du suiveur de ligne
+		while(lignePositionActuelle!=LC)
+		{//Wait till ligne du centre happen
+		}
+}
+
+void *Robot::colorLoop(void){
+	while(1){
+	RgbColor readColor;
+			readColor = capteurCouleur.getColorI2C();
+			LCD_ClearAndPrint("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
+
+			//fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
+			//step 2
+	        HsbColor colorsHSB = RGBtoHSB(readColor);
+			LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
+
+			currentColor = currentFloorColor(colorsHSB,true);
+
+	}
+	return 0;
+}
+
