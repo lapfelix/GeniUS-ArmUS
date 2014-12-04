@@ -19,7 +19,7 @@ void NFC::scanTag()
 
 	while(1)
 	{
-		THREAD_MSleep(100);
+		THREAD_MSleep(120);
 		scanComplet = false;
 		arduinoNFCPin1 = DIGITALIO_Read(NFCPIN1); //Pin 7 sur arduino, commence a droite (ex: 0001) 1=> pin7
 		arduinoNFCPin2 = DIGITALIO_Read(NFCPIN2); //Pin 6 sur arduino
