@@ -1,10 +1,12 @@
 #include "CapteurCouleur.h"
 
-int adjd_dev;
-// fonctions globales
+CapteurCouleur::CapteurCouleur()
+{
+	this->adjd_dev = 0;
+}
 
 //permet de changer la valeur des registres
-void adjd_SetRegister(unsigned char reg, unsigned char val)
+void CapteurCouleur::adjd_SetRegister(unsigned char reg, unsigned char val)
 {
 	unsigned char data[2];
 	data[0] = reg;
@@ -13,7 +15,7 @@ void adjd_SetRegister(unsigned char reg, unsigned char val)
 }
 
 //permet de changer la valeur des registres de 16 bits
-void adjd_SetRegister16(unsigned char reg, int val)
+void CapteurCouleur::adjd_SetRegister16(unsigned char reg, int val)
 {
 	unsigned char data[2];
 	data[0] = reg;
@@ -25,7 +27,7 @@ void adjd_SetRegister16(unsigned char reg, int val)
 }
 
 //permet de lire la valeur des registres
-unsigned char adjd_ReadRegister(unsigned char reg)
+unsigned char CapteurCouleur::adjd_ReadRegister(unsigned char reg)
 {
 	unsigned char val;
 
@@ -35,7 +37,7 @@ unsigned char adjd_ReadRegister(unsigned char reg)
 }
 
 //permet de lire la valeur des registres de 16 bits
-int adjd_ReadRegister16(unsigned char reg)
+int CapteurCouleur::adjd_ReadRegister16(unsigned char reg)
 {
 	int val16;
 	unsigned char val;
@@ -51,7 +53,7 @@ int adjd_ReadRegister16(unsigned char reg)
 // Permet de connaitre la valeur du CAP dans le registre
 // prend comme argument une constante CAP_RED, CAP_BLUE, CAP_CLEAR ou CAP_GREEN
 // retourne un unsigned char de la valeur
-unsigned char cap_GetValue(unsigned char cap_address)
+unsigned char CapteurCouleur::cap_GetValue(unsigned char cap_address)
 {
 	unsigned char cap_value;
 
@@ -64,7 +66,7 @@ unsigned char cap_GetValue(unsigned char cap_address)
 // Permet de changer la valeur du CAP dans le registre
 // prend comme premier argument une constante CAP_RED, CAP_BLUE, CAP_CLEAR ou CAP_GREEN
 // le second argument est compris entre 0 et 15, et determine la valeur du cap a ecrire dans le registre
-void cap_SetValue(unsigned char cap_address, unsigned char cap_value)
+void CapteurCouleur::cap_SetValue(unsigned char cap_address, unsigned char cap_value)
 {
 	adjd_SetRegister(cap_address, cap_value);
 }
@@ -74,7 +76,7 @@ void cap_SetValue(unsigned char cap_address, unsigned char cap_value)
 // Permet de connaitre la valeur du CAP dans le registre
 // address est une constante comme INTEGRATION_RED, ...
 // retourne un int de la valeur
-int integrationTime_GetValue(unsigned char address)
+int CapteurCouleur::integrationTime_GetValue(unsigned char address)
 {
 	int time_value;
 
@@ -87,28 +89,28 @@ int integrationTime_GetValue(unsigned char address)
 // Permet de changer la valeur du CAP dans le registre
 // address est une constante comme INTEGRATION_RED, ...
 // time_value est compris entre 0 et 4095
-void integrationTime_SetValue(unsigned char address, int time_value)
+void CapteurCouleur::integrationTime_SetValue(unsigned char address, int time_value)
 {
 	adjd_SetRegister16(address, time_value);
 }
 
 
 // Vous devez vous-meme modifier cette fonction tout dependamment de la sortie numerique utilisee
-void led_TurnOff()
+void CapteurCouleur::led_TurnOff()
 {
 	// TODO : code a changer
 	DIGITALIO_Write(9, 0);
 }
 
 // Vous devez vous-meme modifier cette fonction tout dependamment de la sortie numerique utilisee
-void led_TurnOn()
+void CapteurCouleur::led_TurnOn()
 {
 	// TODO : code a changer
 	DIGITALIO_Write(9, 1);
 }
 
 // permet de faire une lecture differentielle avec et sans eclairage de la led
-void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
+void CapteurCouleur::color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 {
 	//premiere lecture sans eclairage
 	led_TurnOff();
@@ -137,7 +139,18 @@ void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear)
 	data_clear = adjd_ReadRegister16(DATA_CLEAR_LO);
 }
 
-void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& data_clear)
+RgbColor CapteurCouleur::getColorI2C()
+{
+	int red, blue, green, clear;
+	color_Read(red, blue, green, clear);
+	RgbColor readColor;
+	readColor.r = red;
+	readColor.g = green;
+	readColor.b = blue;
+	return readColor;
+}
+
+void CapteurCouleur::color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& data_clear)
 {
 	led_TurnOn();
 	adjd_SetRegister(ADJD_REG_CONFIG, 0 << CONFIG_TOFS);
@@ -156,7 +169,7 @@ void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& 
 }
 
 // l argument est un integer qui ne doit pas etre modifie
-int color_Init(int& dev_handle)
+int CapteurCouleur::color_Init(int& dev_handle)
 {
 	int error;
 	error = armus::i2c_RegisterDevice(ADJD_S371_QR999_SADR,  100000, 1000, dev_handle);
@@ -167,12 +180,13 @@ int color_Init(int& dev_handle)
 /*
  * Ce qui a été codé par nous.
  */
-void initCapteurI2C()
+void CapteurCouleur::initCapteurI2C()
 {
 	//LCD_Printf("Init capteurCouleur");
 
 	//initialisation du capteur
 	//LCD_Printf("INIT RESULT: %i",color_Init(adjd_dev));
+	color_Init(adjd_dev);
 
 	cap_SetValue(CAP_RED, 10);
 	cap_SetValue(CAP_GREEN, 10);
@@ -183,32 +197,6 @@ void initCapteurI2C()
 	integrationTime_SetValue(INTEGRATION_GREEN, 2*255*(175.f/183.f));
 	integrationTime_SetValue(INTEGRATION_BLUE, 2*255*(222.f/175.f));
 	integrationTime_SetValue(INTEGRATION_CLEAR, 2*255);
-}
-
-RgbColor getColorI2C()
-{
-	int red, blue, green, clear;
-	color_Read(red, blue, green, clear);
-	RgbColor readColor;
-	readColor.r = red;
-	readColor.g = green;
-	readColor.b = blue;
-	return readColor;
-}
-
-RgbColor getColorAnalog()
-{
-	RgbColor readColors;
-
-	DIGITALIO_Write(10, 1);		// met la LED du senseur ON
-	THREAD_MSleep (200);
-	readColors.r = (int)((float)ANALOG_Read(1) * 1.8);
-	readColors.g = (int)((float)ANALOG_Read(2) * 1.5);
-	readColors.b = (int)((float)ANALOG_Read(3) * 2);
-
-	DIGITALIO_Write(10, 0);		// met la LED du senseur OFF
-	//THREAD_MSleep (5);
-	return readColors;
 }
 
 

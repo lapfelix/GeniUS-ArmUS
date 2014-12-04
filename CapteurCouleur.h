@@ -3,8 +3,8 @@
  * Création : 01/10/2014
  * Modifié  : 02/10/2014
  */
-#ifndef CAPTEURCOULEUR_H
-#define CAPTEURCOULEUR_H
+#ifndef CapteurCouleur_H_
+#define CapteurCouleur_H_
 
 #include <iostream>
 #include <libarmus.h>
@@ -13,19 +13,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <map>
-
-struct RgbColor
-{
-		int r;
-		int g;
-		int b;
-};
-struct HsbColor
-{
-		float hue;
-		float saturation;
-		float brightness;
-};
+#include "Couleur_RGB.h"
 
 #define ADJD_S371_QR999_SADR 	0x74
 #define CAP_RED					0x6
@@ -48,8 +36,26 @@ struct HsbColor
 
 #define CONFIG_TOFS				0
 
-void initCapteurI2C();
-RgbColor getColorI2C();
-RgbColor getColorAnalog();
-
+class CapteurCouleur
+{
+private:
+	int adjd_dev;
+public:
+	CapteurCouleur();
+	void initCapteurI2C();
+	void adjd_SetRegister(unsigned char reg, unsigned char val);
+	void adjd_SetRegister16(unsigned char reg, int val);
+	unsigned char adjd_ReadRegister(unsigned char reg);
+	int  adjd_ReadRegister16(unsigned char reg);
+	unsigned char cap_GetValue(unsigned char cap_address);
+	void cap_SetValue(unsigned char cap_address, unsigned char cap_value);
+	int integrationTime_GetValue(unsigned char address);
+	void integrationTime_SetValue(unsigned char address, int time_value);
+	void led_TurnOff();
+	void color_Read(int& data_red, int& data_blue, int& data_green, int& data_clear);
+	void color_ReadToCalibrate(int& data_red, int& data_blue, int& data_green, int& data_clear);
+	int color_Init(int& dev_handle);
+	void led_TurnOn();
+	RgbColor getColorI2C();
+};
 #endif

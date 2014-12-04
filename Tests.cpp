@@ -1,26 +1,32 @@
 #include "Tests.h"
 
+void test()
+{
+		if(DIGITALIO_Read(14)){
+			LCD_Printf("\nTEST COULEURS\n");
+				testCouleur();
+		}
+
+		//test de entrees sorties si bouton orange
+		if(DIGITALIO_Read(15)){
+			LCD_Printf("\nTEST ENTRER\n");
+				Test_Des_Entrees_Et_Sorties();
+		}
+}
+
 void testCouleur()
 {
-	//TODO: un 'if' qui prend la couleur avec le i2c ou analogue dependant du robot
-
-	//le robot 43 a une pin entre le digital 9 et le Vcc
-	bool estRobot43 = true;
-
+	CapteurCouleur testCapteur;
 	//initialiser le capteur cest important quand on s'appelle robot 43
-	if(estRobot43)
-		initCapteurI2C();
+
+	testCapteur.initCapteurI2C();
 
 	//ofstream fichier;
 	//fichier.open("couleur.txt");
 	while(1)
 	{
 		RgbColor readColor;
-		//step 1
-		if(estRobot43)
-			readColor = getColorI2C();
-		else
-			readColor = getColorAnalog();
+		readColor = testCapteur.getColorI2C();
 		LCD_ClearAndPrint("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
 
 		//fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
@@ -28,7 +34,7 @@ void testCouleur()
         HsbColor colorsHSB = RGBtoHSB(readColor);
 		LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
 
-		int laCouleur = currentFloorColor(colorsHSB,estRobot43);
+		int laCouleur = currentFloorColor(colorsHSB,true);
 		LCD_Printf("\n");
 		switch(laCouleur){
 					case 0:

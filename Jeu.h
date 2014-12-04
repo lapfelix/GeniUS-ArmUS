@@ -36,7 +36,7 @@ int niveau;
 int caseRendu;
 int pointage;
 Planete planete;
-map<int,char*> questions;
+
 public:
 	Jeu(int);
 	int* niveauFacile();

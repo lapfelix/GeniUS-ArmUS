@@ -12,8 +12,10 @@
 #include "Couleur.h"
 #include <libarmus.h>
 
+
 void testCouleur();
 void Test_Des_Entrees_Et_Sorties();
+void test();
 
 #endif /* TESTS_H_ */
 

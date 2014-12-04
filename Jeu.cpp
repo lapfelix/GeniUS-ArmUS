@@ -8,7 +8,6 @@ Jeu::Jeu(int niveau)
 	this->niveau = niveau;
 	this->pointage = 0;
 	this->caseRendu = 0;
-	this->questions = questionsDifficile();
 	initJeu();
 }
 
@@ -17,7 +16,6 @@ int* Jeu::niveauFacile()
 {
 	AUDIO_PlayFile("questionFacile.wav");
 	LCD_PrintBmp("questionFacile.bmp");
-	//Ordre des planètess
 	int* ordrePlanete = new int[NOMBRECARTES];
 	for(int i = 1; i<= NOMBRECARTES;++i)
 		ordrePlanete[i-1] = i;
@@ -44,45 +42,19 @@ int* Jeu::niveauMoyen()
 
 int* Jeu::niveauDifficile()
 {
-	int* ordrePlanete = new int[NOMBRECARTES-1];
-	int i = 7;
-	vector<int> listeNombre;
-	for(int j=1;j<=NOMBRECARTES;++j)
-	{
-		listeNombre.push_back(i);
-	}
-
-	ordrePlanete[random(i,listeNombre)] = MERCURE;
-	ordrePlanete[random(--i,listeNombre)] = MARS;
-	ordrePlanete[random(--i,listeNombre)] = VENUS;
-	ordrePlanete[random(--i,listeNombre)] = TERRE;
-	ordrePlanete[random(--i,listeNombre)] = NEPTUNE;
-	ordrePlanete[random(--i,listeNombre)] = URANUS;
-	ordrePlanete[random(--i,listeNombre)] = SATURNE;
-	ordrePlanete[random(--i,listeNombre)] = JUPITER;
+	AUDIO_PlayFile("questionDifficile.wav");
+	LCD_PrintBmp("questionDifficile.bmp");
+	int* ordrePlanete = new int[NOMBRECARTES];
+	int i = 0;
+	ordrePlanete[i++] = MERCURE;
+	ordrePlanete[i++] = MARS;
+	ordrePlanete[i++] = VENUS;
+	ordrePlanete[i++] = TERRE;
+	ordrePlanete[i++] = NEPTUNE;
+	ordrePlanete[i++] = URANUS;
+	ordrePlanete[i++] = SATURNE;
+	ordrePlanete[i++] = JUPITER;
 	return ordrePlanete;
-}
-
-map<int,char*> Jeu::questionsDifficile()
-{
-	map<int,char* > unMap;
-	char qMercure[] = "Mon nom est utilisé dans le tableau périodique";
-	char qVenus[] = "Je suis la planète la plus brillante vue de la terre";
-	char qTerre[] = "Il y a beaucoup de micro-organisme qui m'habite";
-	char qMars[] = "On me surnomme la planète rouge, car ma surface contient du fer oxydé";
-	char qJupiter[] = "Je suis entouré de 67 satellites, dont Io et Europe";
-	char qSaturne[] = "J'ai des anneaux très prononcés";
-	char qUranus[] = "Je dois mon nom à la divinité romaine du ciel";
-	char qNeptune[]= "Je dois mon nom à la divinité romaine des océans";
-	unMap[MERCURE] = qMercure;
-	unMap[VENUS] = qVenus;
-	unMap[TERRE] = qTerre;
-	unMap[MARS] = qMars;
-	unMap[JUPITER] = qJupiter;
-	unMap[SATURNE] = qSaturne;
-	unMap[URANUS] = qUranus;
-	unMap[NEPTUNE] = qNeptune;
-	return unMap;
 }
 
 void Jeu::initJeu()
@@ -91,10 +63,7 @@ void Jeu::initJeu()
 	{
 		case 1:planete.ordre = niveauFacile();break;
 		case 2:planete.ordre = niveauMoyen();break;
-		case 3:planete.ordre = niveauDifficile();
-			   planete.question = questions[1];
-			   //LCD_Printf(planete.question);
-			   break;
+		case 3:planete.ordre = niveauDifficile();break;
 	}
 }
 
@@ -102,8 +71,6 @@ void Jeu::jouer(int carte)
 {
 	this->pointage += (carte == planete.ordre[caseRendu]) ? 1 : 0;
 	this->caseRendu++;
-	if(this->niveau==3)
-		planete.question = questionsDifficile()[planete.ordre[caseRendu]];
 }
 
 char* Jeu::lireQuestion()
@@ -121,6 +88,8 @@ int Jeu::lireCaseRendu()
 void Jeu::lirePointage()
 {
 	if(pointage!=8)
+		AUDIO_PlayFile("R2D2-Scream.wav");
+	else
 		AUDIO_PlayFile("R2D2-Scream.wav");
 	switch(this->pointage)
 	{

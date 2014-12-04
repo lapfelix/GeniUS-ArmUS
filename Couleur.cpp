@@ -4,25 +4,13 @@
 #include "Couleur.h"
 
 float hues[4] = {BLUE_HUE,RED_HUE,GREEN_HUE,YELLOW_HUE};
-
+CapteurCouleur couleur;
 int readAndGetColor(){
 
 	RgbColor readColor;
-
-	//step 1
-	if(true)
-		readColor = getColorI2C();
-	else
-		readColor = getColorAnalog();
-	//LCD_Printf("\nR=%i, G=%i, B=%i", readColor.r, readColor.g, readColor.b);
-
-	//fichier << "background-color: rgb(" <<readColor.r<<","<<readColor.g<<","<<readColor.b<<")"<< endl;
-	//step 2
+	readColor = couleur.getColorI2C();
 	HsbColor colorsHSB = RGBtoHSB(readColor);
-	//LCD_Printf("\nH=%.4f, S=%.4f, B=%.4f ", colorsHSB.hue, colorsHSB.saturation, colorsHSB.brightness);
-	LCD_Printf("\nCurrentCOlor: %i",currentFloorColor(colorsHSB,true));
 	return currentFloorColor(colorsHSB,true);
-
 }
 
 int currentFloorColor(HsbColor readColor, bool isRobot43)

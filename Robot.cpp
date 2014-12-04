@@ -5,7 +5,7 @@
 Robot::Robot(int transitions)
 {
 	AUDIO_SetVolume(90);
-
+	capteurCouleur.initCapteurI2C();
 	LCD_ClearAndPrint("Debut");
 	this->shouldMoveForward = false;
 	this->shouldMoveBackwards = false;
@@ -28,6 +28,16 @@ void *Robot::scanPointer(void *context)
 	return ((Robot *)context)->scan();
 }
 
+void *Robot::scanCouleur(void)
+{
+	return 0;
+}
+
+void *Robot::couleurPointer(void *context)
+{
+	return ((Robot *)context)->scanCouleur();
+}
+
 int Robot::lireScan()
 {
 	return nfc.lireTag();
@@ -46,8 +56,8 @@ void *Robot::avancerAvecLaLigne(void)
 	const int LG=1, LC=2, LD=4, LGC=3, LDC=6, LGD=5; // code binaire pour identifier les capteurs de lignes Gauche / Centre / Droite
 	const float correctionRoues = 30; // transitions / TEMPS
 	int lignePositionActuelle = 0, ligneDernierePosition = 0;
-		while(Robot::shouldMoveForward)
-			{
+	while(Robot::shouldMoveForward)
+	{
 
 		// Lecture du suiveur de ligne
 		lignePositionActuelle = 0;

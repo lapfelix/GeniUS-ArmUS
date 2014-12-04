@@ -5,12 +5,15 @@
  *      Author: DaeSoluS
  */
 #include "NFC.h"
-#include "Jeu.h"
+#include "Jeu.h" 
+#include "CapteurCouleur.h"
+
 class Robot
 {
 private:
 	int bouton;
 	NFC nfc;
+	CapteurCouleur capteurCouleur;
 	int lastScan;
 
 	//Capteur unCapteur;
@@ -30,6 +33,11 @@ public:
 	void lireSon(char*);
 	void mAJdesLumieres(bool, bool , bool, bool);
 	void testCouleur();
+
+	void *couleurPointer(void *context);
+	void *scanCouleur(void);
+
+	//Fonction fait bien vite.
 	void *avancerAvecLaLigne(void);
 	void *reculerAvecLaLigne(void);
 	void stopMotors();
