@@ -120,4 +120,6 @@ void waitingToStartLoop(){
 	THREAD_MSleep(1000);
 }
 
-
+void waitUntilColor(int couleur){
+	while(unRobot.)
+}
